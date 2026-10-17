@@ -57,7 +57,8 @@ Honest numbers: at L1–L2, plain gzip compresses better. What gzip cannot do is
 - **October 2026**: first applied domain, server event logs: `glyph-fleet-rca` v0.1 (IPMI SEL, binary and text, PCIe tree, the survivor search).
 - **16 October 2026**: `glyph-fleet-rca` v0.2: five sources read into one glyph language: SEL, Linux kernel and NVIDIA Xid, DCGM telemetry and active diagnostics. Triage rules reviewed by a practitioner from his own records.
 - **17 October 2026**: v0.2.1 released: a health index from 0 to 100 % for every GPU, built from its own history. Uncorrectable memory errors and failed matrix-math tests cap the score.
-- **Next**: vendor codebooks (Dell iDRAC, Lenovo XCC, HPE IML), Windows Event Log in several languages, and an analysis service that receives only tokens, never raw data.
+- **17 October 2026**: v0.3: vendor codebooks built from the official Dell, Lenovo and HPE message guides (69 Dell iDRAC IDs, 67 Lenovo XCC/UEFI IDs, 53 HPE IML messages), including GPU-server platforms. Every entry cites its guide; nothing is guessed.
+- **Next**: Supermicro and AMD records, Windows Event Log in several languages, and an analysis service that receives only tokens, never raw data.
 
 ## About the author
 
