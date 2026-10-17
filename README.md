@@ -44,9 +44,9 @@ In glyphs it takes seconds:
 | L3 run → concept × count | a storm of millions of lines becomes one glyph with a counter |
 | L4 fleet → signatures × servers | servers with the same story collapse into one line; **the survivor stands alone** |
 
-On a synthetic fleet of 6,000 servers and 4 million log lines, it found the single survivor, tied the crash to one firmware version, and told a faulty PCIe switch apart from a faulty GPU, in about 95 seconds on one CPU core.
+On a synthetic fleet of 6,000 servers and 4.1 million events from five sources (four BMC log dialects, two kernel log formats, DCGM telemetry and diagnostics), it found the single survivor, tied the crash to one firmware version, and told a faulty PCIe switch apart from a faulty GPU, in about 98 seconds on one CPU core.
 
-Honest numbers: at L1–L2, plain gzip compresses better. What gzip cannot do is see that different words mean the same thing. Glyphs pull ahead at L3 (×210) and L4 (×27,900), where meaning, not bytes, is being compressed.
+Honest numbers: at L1–L2, plain gzip compresses better. What gzip cannot do is see that different words mean the same thing. Glyphs pull ahead at L3 and L4 (×26,440 at L4), where meaning, not bytes, is being compressed.
 
 **Tier 2 in practice**: the same analysis can be produced in opaque tokens and shared with a vendor or contractor. They see which pattern is a storm and which is rare. They do not see hosts, slots, firmware versions or events. The private codebook stays with the owner of the data.
 
