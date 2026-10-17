@@ -54,8 +54,10 @@ Honest numbers: at L1–L2, plain gzip compresses better. What gzip cannot do is
 
 - **2025**: GlyphAI framework and this repository.
 - **2025–2026**: the monograph, published on Zenodo.
-- **October 2026**: first applied domain, server event logs: `glyph-fleet-rca`.
-- **Next**: Windows Event Log in several languages, Linux kernel and GPU logs, full vendor codebooks, and an analysis service that receives only tokens, never raw data.
+- **October 2026**: first applied domain, server event logs: `glyph-fleet-rca` v0.1 (IPMI SEL, binary and text, PCIe tree, the survivor search).
+- **16 October 2026**: `glyph-fleet-rca` v0.2: five sources read into one glyph language: SEL, Linux kernel and NVIDIA Xid, DCGM telemetry and active diagnostics. Triage rules reviewed by a practitioner from his own records.
+- **17 October 2026**: v0.2.1, in testing on the `gpu-health` branch: a health index from 0 to 100 % for every GPU, built from its own history. Uncorrectable memory errors and failed matrix-math tests cap the score.
+- **Next**: vendor codebooks (Dell iDRAC, Lenovo XCC, HPE IML), Windows Event Log in several languages, and an analysis service that receives only tokens, never raw data.
 
 ## About the author
 
