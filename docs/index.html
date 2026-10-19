@@ -220,11 +220,11 @@ footer nav{flex-wrap:wrap}
   <div class="wrap">
     <div class="eyebrow">How it works</div>
     <h2>Five sources, one language</h2>
-    <p>The logs already sit on the servers being sold. We read them before decommissioning, translate every vendor's wording into one set of concepts, and tie each event to a GPU by its PCIe address. Nothing is installed on the servers; the tool reads copied files, offline.</p>
+    <p>The logs already sit on the servers being sold. We read them before decommissioning, translate every vendor's wording into one set of concepts, and tie each event to a GPU by its PCIe address. Nothing is installed on the servers: one <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca/blob/main/tools/glyph-collect.sh">read-only script</a> gathers the logs into an archive you review first, and the analysis runs offline on the copy.</p>
     <div class="sources">
       <div class="src"><b>BMC logs</b><span>IPMI SEL, Dell iDRAC, Lenovo XCC and HPE iLO messages, read from the vendors' own guides</span></div>
       <div class="src"><b>Kernel log</b><span>NVIDIA Xid codes, PCIe AER, MCE, EDAC</span></div>
-      <div class="src"><b>DCGM telemetry</b><span>ECC counters, row remapping, NVLink CRC, throttling</span></div>
+      <div class="src"><b>DCGM telemetry</b><span>ECC counters, row remapping, NVLink CRC, throttling; or the card's own memory of remapped rows from nvidia-smi</span></div>
       <div class="src"><b>Diagnostics</b><span>dcgmi diag results, including matrix-math tests</span></div>
       <div class="src"><b>PCIe tree</b><span>Missing and degraded links, switch versus GPU</span></div>
     </div>
@@ -285,7 +285,7 @@ footer nav{flex-wrap:wrap}
       <div>
         <div class="eyebrow">Free pilot</div>
         <h2>One fleet, one report, no cost</h2>
-        <p>Send logs from a batch you are buying, selling or decommissioning. You get a health card for every GPU and the fleet summary. Logs stay confidential and are used only for your report.</p>
+        <p>Send logs from a batch you are buying, selling or decommissioning. You get a health card for every GPU and the fleet summary. Run one read-only script per server; its archive masks hostnames, addresses and serial numbers by default, and you look inside before sending. Logs stay confidential and are used only for your report.</p>
       </div>
       <div>
         <div class="email">

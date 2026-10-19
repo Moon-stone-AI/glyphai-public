@@ -52,14 +52,15 @@ Honest numbers: at L1–L2, plain gzip compresses better. What gzip cannot do is
 
 ## Timeline
 
-- **2025**: GlyphAI framework and this repository.
-- **2025–2026**: the monograph, published on Zenodo.
+- **June 2025**: the GlyphAI framework begins.
+- **February 2026**: the monograph, published on Zenodo.
 - **October 2026**: first applied domain, server event logs: `glyph-fleet-rca` v0.1 (IPMI SEL, binary and text, PCIe tree, the survivor search).
 - **16 October 2026**: `glyph-fleet-rca` v0.2: five sources read into one glyph language: SEL, Linux kernel and NVIDIA Xid, DCGM telemetry and active diagnostics. Triage rules reviewed by a practitioner from his own records.
 - **17 October 2026**: v0.2.1 released: a health index from 0 to 100 % for every GPU, built from its own history. Uncorrectable memory errors and failed matrix-math tests cap the score.
 - **17 October 2026**: v0.3: vendor codebooks built from the official Dell, Lenovo and HPE message guides (69 Dell iDRAC IDs, 67 Lenovo XCC/UEFI IDs, 53 HPE IML messages), including GPU-server platforms. Every entry cites its guide; nothing is guessed.
 - **17 October 2026**: v0.4: work queues by symptom, and the failure-pattern loop: a queue is mined into draft records for the fault reference; records reviewed by a practitioner label matching nodes with the known fix in every later analysis.
-- **Next**: Supermicro and AMD records, Windows Event Log in several languages, and an analysis service that receives only tokens, never raw data.
+- **19 October 2026**: v0.5: a read-only collector for one server or a handful (kernel log, BMC event log, nvidia-smi, PCIe links), redacted by default, and `ingest` that turns its archives into a fleet for analysis. A GPU's own memory of remapped rows now counts, never twice for one incident.
+- **Next**: first pilots on real servers, Supermicro and AMD records, Windows Event Log in several languages, and an analysis service that receives only tokens, never raw data.
 
 ## About the author
 
