@@ -254,6 +254,321 @@ footer nav{flex-wrap:wrap}
   </div>
 </section>
 
+<!-- Section: Interactive sample report (synthetic fleet, scored with codebook health v0.2.1) -->
+<section id="fleet-report">
+  <style>
+    #fleet-report .fr{background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(7,26,61,.08)}
+    /* topology */
+    #fleet-report .fr-top{background:var(--hero);color:var(--hero-ink);padding:22px 26px 8px}
+    #fleet-report .fr-top .k{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#33AFA9}
+    #fleet-report .fr-top h3{margin:4px 0 0;font-size:19px;color:var(--hero-ink)}
+    #fleet-report .fr-svgwrap{overflow-x:auto}
+    #fleet-report svg{display:block;width:100%;min-width:620px;height:auto}
+    #fleet-report .edge{stroke:rgba(180,196,218,.25);stroke-width:1.5;fill:none;transition:stroke .2s}
+    #fleet-report .edge.hot{stroke:#33AFA9;stroke-width:2.5}
+    #fleet-report .hub rect{fill:#0D3261;stroke:#2F689A;stroke-width:1.5}
+    #fleet-report .hub text,#fleet-report .node text{font-family:var(--f-mono);fill:var(--hero-muted);font-size:11px}
+    #fleet-report .node{cursor:pointer;outline:none}
+    #fleet-report .node .ring{fill:#071A3D;stroke-width:3}
+    #fleet-report .node .halo{fill:none;stroke-width:1.5;opacity:0;transition:opacity .2s}
+    #fleet-report .node.sel .halo,#fleet-report .node:focus-visible .halo{opacity:1}
+    #fleet-report .node .val{fill:#fff;font-size:12px;font-weight:600}
+    #fleet-report .node.dim{opacity:.25}
+    #fleet-report .fr-cap{font-size:12px;color:var(--hero-muted);padding:4px 0 14px}
+    /* legend + kpis */
+    #fleet-report .fr-legend{display:flex;flex-wrap:wrap;gap:8px 22px;padding:12px 26px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
+    #fleet-report .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+    #fleet-report .fr-kpi{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border-bottom:1px solid var(--line)}
+    #fleet-report .fr-kpi div{padding:14px 10px;text-align:center}
+    #fleet-report .fr-kpi span{display:block;font-size:13.5px;color:var(--muted)}
+    #fleet-report .fr-kpi b{display:block;margin-top:2px;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:20px;color:var(--ink)}
+    #fleet-report .fr-kpi b.lnk{color:var(--accent)}
+    /* filters */
+    #fleet-report .fr-flt{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px 26px 6px}
+    #fleet-report .fr-flt label{display:block;font-weight:600;font-size:15px;margin-bottom:8px;color:var(--ink)}
+    #fleet-report select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 15px var(--f-body)}
+    #fleet-report .seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px}
+    #fleet-report .seg button{flex:1;border:0;background:none;padding:8px 10px;border-radius:999px;font:600 14.5px var(--f-body);color:var(--muted);cursor:pointer}
+    #fleet-report .seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+    /* cards */
+    #fleet-report .fr-h{padding:16px 26px 8px;font-weight:600;font-size:15px;color:var(--ink)}
+    #fleet-report .fr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 26px 22px}
+    #fleet-report .card{all:unset;box-sizing:border-box;cursor:pointer;display:block;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--paper);transition:border-color .15s,box-shadow .15s}
+    #fleet-report .card:hover{border-color:var(--accent)}
+    #fleet-report .card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    #fleet-report .card[aria-pressed=true]{border:2px solid var(--accent);padding:11px 13px;box-shadow:0 2px 10px rgba(47,104,154,.15)}
+    #fleet-report .card > span{display:block}
+    #fleet-report .card .r1{display:flex;align-items:center;gap:8px}
+    #fleet-report .card .nm{font-weight:700;color:var(--ink)}
+    #fleet-report .tag{font-family:var(--f-mono);font-size:11.5px;padding:1px 6px;border-radius:5px;background:var(--accent-soft);color:var(--accent)}
+    #fleet-report .card .sc{margin-left:auto;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
+    #fleet-report .card .r2{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;color:var(--muted);margin:4px 0 8px}
+    #fleet-report .bar{display:block;height:5px;margin-top:0;border-radius:9px;background:var(--track);overflow:hidden}
+    #fleet-report .bar i{display:block;height:100%;border-radius:9px;animation:none}
+    /* detail */
+    #fleet-report .fr-det{margin:0 26px 26px;border:1px solid var(--line);border-radius:14px;background:var(--bg);padding:18px 20px}
+    #fleet-report .d-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    #fleet-report .d-h h4{margin:0;font-size:16.5px;color:var(--ink)}
+    #fleet-report .d-h h4 span{color:var(--accent);font-family:var(--f-mono)}
+    #fleet-report .chip{margin-left:auto;font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:999px;color:#fff}
+    #fleet-report .d-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+    #fleet-report .d-meta span{display:block;font-size:12.5px;color:var(--muted)}
+    #fleet-report .d-meta b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:15px;color:var(--ink)}
+    #fleet-report .verdict{font-size:14.5px;padding:9px 12px;border-radius:8px;background:var(--paper);border-left:3px solid var(--muted);margin-bottom:14px;color:var(--ink)}
+    #fleet-report .d-cols{display:grid;grid-template-columns:1fr 1.4fr;gap:22px}
+    #fleet-report .d-cols h5{margin:0 0 10px;font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+    #fleet-report .comp{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13.5px;margin-bottom:9px;color:var(--ink)}
+    #fleet-report .comp em{font-style:normal;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+    #fleet-report .comp .bar{grid-column:1/-1;height:4px}
+    #fleet-report .ev{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+    #fleet-report .ev li{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+    #fleet-report .ev .g{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+    #fleet-report .ev code{font-family:var(--f-mono);font-size:12.5px;font-weight:600;color:var(--teal)}
+    #fleet-report .ev .eff{margin-left:auto;font-family:var(--f-mono);font-size:12.5px;color:var(--bad)}
+    #fleet-report .ev .fr-src{display:block;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin-top:4px;word-break:break-word}
+    #fleet-report .fr-foot{padding:0 26px 20px;font-size:12.5px;color:var(--muted)}
+    #fleet-report .fr-foot a{color:var(--accent)}
+    @media (max-width:900px){
+      #fleet-report .d-cols{grid-template-columns:1fr}
+      #fleet-report .d-meta{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:600px){
+      #fleet-report .fr-top,#fleet-report .fr-legend{padding-left:16px;padding-right:16px}
+      #fleet-report .fr-flt{grid-template-columns:1fr;padding:16px 16px 4px}
+      #fleet-report .fr-h{padding:14px 16px 8px}
+      #fleet-report .fr-grid{grid-template-columns:1fr;padding:0 16px 18px}
+      #fleet-report .fr-det{margin:0 16px 18px;padding:16px}
+      #fleet-report .fr-foot{padding:0 16px 18px}
+      #fleet-report .chip{margin-left:0}
+    }
+  </style>
+
+  <div class="wrap">
+    <div class="eyebrow">Interactive sample report</div>
+    <h2>One server, eight GPUs, every deduction shown</h2>
+    <p>Select a GPU to see the log lines behind its score, the concept each line was translated into, and what it cost. The fleet is synthetic; the rules are the published ones.</p>
+
+    <div class="fr">
+      <div class="fr-top">
+        <div class="k">GlyphAI · GPU health</div>
+        <h3>node-3f9a2c41d0 · HGX 8-GPU server</h3>
+        <div class="fr-svgwrap"><svg id="fr-svg" viewBox="0 0 760 250" role="group" aria-label="PCIe topology of the sample server"></svg></div>
+        <div class="fr-cap">Illustrative PCIe tree: CPU root complex → four PCIe switches → two GPUs each. Ring colour = band, number = score.</div>
+      </div>
+
+      <div class="fr-legend" id="fr-legend"></div>
+
+      <div class="fr-kpi">
+        <div><span>Average score</span><b id="fr-avg">–</b></div>
+        <div><span>GPUs shown</span><b id="fr-n">–</b></div>
+        <div><span>Selected</span><b class="lnk" id="fr-selk">–</b></div>
+      </div>
+
+      <div class="fr-flt">
+        <div>
+          <label for="fr-band">Filter by band</label>
+          <select id="fr-band">
+            <option value="all">All GPUs</option>
+            <option value="excellent">Excellent (90+)</option>
+            <option value="good">Good (75–89)</option>
+            <option value="caution">Caution (50–74)</option>
+            <option value="do not sell">Do not sell (below 50)</option>
+          </select>
+        </div>
+        <div>
+          <label id="fr-model-l">Model</label>
+          <div class="seg" role="group" aria-labelledby="fr-model-l" id="fr-model">
+            <button type="button" data-m="all" aria-pressed="true">All</button>
+            <button type="button" data-m="H100" aria-pressed="false">H100</button>
+            <button type="button" data-m="H200" aria-pressed="false">H200</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-h" id="fr-h">GPUs on this server</div>
+      <div class="fr-grid" id="fr-grid"></div>
+
+      <div class="fr-det" id="fr-det" aria-live="polite"></div>
+
+      <div class="fr-foot">Synthetic data. Scores are computed in your browser with the rules of
+        <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca/blob/main/codebook/health_v0.2.1.yaml">codebook/health_v0.2.1.yaml</a>.
+        A score describes a GPU's history; it is not a probability that the GPU will survive a given time.</div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var root = document.getElementById('fleet-report');
+    if (!root) return;
+    var $ = function (id) { return root.querySelector('#' + id); };
+
+    // ---- rules: a subset of codebook/health_v0.2.1.yaml (only the concepts used below)
+    var COMP = { memory: ['GPU memory', 35], severe_xid: ['Severe GPU errors', 25], links: ['NVLink and PCIe', 15],
+                 throttling: ['Power and thermal throttling', 10], diagnostics: ['Active diagnostics', 10], age: ['Age in service', 5] };
+    var RULE = {
+      'GPU.MEM.ECC.DBE':         ['memory', 8, 24], 'GPU.MEM.REMAP.EVENT': ['memory', 4, 16],
+      'GPU.MEM.REMAP.LOW_SPARE': ['memory', 15, 15, 'once'],
+      'GPU.BUS.LOST':            ['severe_xid', 8, 24],
+      'LINK.NVLINK.ERROR':       ['links', 3, 9], 'PCIE.CORR': ['links', 2, 6], 'PCIE.FATAL': ['links', 8, 8],
+      'LINK.DEGRADED':           ['links', 10, 10, 'once'],
+      'POWER.THROTTLE':          ['throttling', 5, 5, 'once'], 'GPU.THERMAL.THROTTLE': ['throttling', 5, 5, 'once'],
+      'GPU.DIAG.FAIL':           ['diagnostics', 10, 10, 'once']
+    };
+    var CAP = { 'GPU.SDC': [10, 'RMA, not for sale: failed matrix-math diagnostic'],
+                'GPU.MEM.REMAP.NO_SPARE': [30, 'Memory banks with no spare rows left'] };
+    var GROUP = ['GPU.MEM.ECC.DBE', 'GPU.MEM.REMAP.EVENT', 'GPU.MEM.REMAP.RECORD_FAIL'];
+    var BANDS = [[90, 'excellent', 'var(--ok)', '#3fbf6a'], [75, 'good', 'var(--good)', '#5b9bd5'],
+                 [50, 'caution', 'var(--warn)', '#e0a33a'], [0, 'do not sell', 'var(--bad)', '#ef6a3a']];
+
+    // ---- synthetic fleet: one HGX server, events as they appear in the logs
+    var K = 'kernel.log', S = 'nvidia-smi -q', P = 'pci-sysfs.tsv', D = 'dcgm', G = 'dcgmi diag';
+    var GPUS = [
+      { id: 'GPU-01', m: 'H100', bdf: '0000:1b:00.0', sw: 0, h: 21024, ev: [] },
+      { id: 'GPU-02', m: 'H200', bdf: '0000:43:00.0', sw: 0, h: 16644, ev: [
+        ['LINK.DEGRADED', P, 'cur_width 8 / max_width 16: link trained at x8']] },
+      { id: 'GPU-03', m: 'H100', bdf: '0000:25:00.0', sw: 1, h: 17520, ev: [
+        ['GPU.MEM.ECC.DBE', K, 'NVRM: Xid (PCI:0000:25:00): 48, DBE (double bit error) ECC error'],
+        ['GPU.MEM.REMAP.EVENT', S, 'Remapped Rows: Uncorrectable Error: 1']] },
+      { id: 'GPU-04', m: 'H200', bdf: '0000:61:00.0', sw: 1, h: 13140, ev: [
+        ['POWER.THROTTLE', D, 'clock event reason: HW power brake slowdown'],
+        ['GPU.THERMAL.THROTTLE', D, 'clock event reason: SW thermal slowdown'],
+        ['LINK.NVLINK.ERROR', K, 'NVRM: Xid (PCI:0000:61:00): 74, NVLink error'],
+        ['LINK.NVLINK.ERROR', K, 'NVRM: Xid (PCI:0000:61:00): 74, NVLink error'],
+        ['PCIE.CORR', K, 'pcieport 0000:5f:01.0: AER: Corrected error received: 0000:61:00.0']] },
+      { id: 'GPU-05', m: 'H100', bdf: '0000:9a:00.0', sw: 2, h: 24090, ev: [
+        ['GPU.MEM.REMAP.EVENT', S, 'Remapped Rows: Uncorrectable Error: 3'],
+        ['GPU.MEM.REMAP.EVENT', S, '(second remap)'], ['GPU.MEM.REMAP.EVENT', S, '(third remap)'],
+        ['GPU.MEM.REMAP.LOW_SPARE', S, 'Bank Remap Availability Histogram: Low: 6 bank(s)'],
+        ['GPU.MEM.REMAP.NO_SPARE', S, 'Bank Remap Availability Histogram: None: 2 bank(s)']] },
+      { id: 'GPU-06', m: 'H100', bdf: '0000:ab:00.0', sw: 2, h: 26280, ev: [
+        ['PCIE.CORR', K, 'pcieport 0000:a9:01.0: AER: Corrected error received: 0000:ab:00.0']] },
+      { id: 'GPU-07', m: 'H200', bdf: '0000:c1:00.0', sw: 3, h: 15330, ev: [
+        ['GPU.DIAG.FAIL', G, 'dcgmi diag -r 3: Diagnostic FAIL on GPU 6'],
+        ['GPU.SDC', G, 'matrix-math result mismatch: possible silent data corruption']] },
+      { id: 'GPU-08', m: 'H100', bdf: '0000:d1:00.0', sw: 3, h: 19272, ev: [
+        ['GPU.BUS.LOST', K, 'NVRM: Xid (PCI:0000:d1:00): 79, GPU has fallen off the bus'],
+        ['GPU.BUS.LOST', K, 'NVRM: Xid (PCI:0000:d1:00): 79, GPU has fallen off the bus'],
+        ['GPU.BUS.LOST', K, 'NVRM: Xid (PCI:0000:d1:00): 79, GPU has fallen off the bus'],
+        ['PCIE.FATAL', K, 'pcieport 0000:cf:01.0: AER: Uncorrected (Fatal) error received: 0000:d1:00.0']] }
+    ];
+
+    function score(g) {
+      var lost = {}, count = {}, effect = [], k;
+      for (k in COMP) lost[k] = 0;
+      g.ev.forEach(function (e) {
+        var c = e[0], r = RULE[c]; count[c] = (count[c] || 0) + 1;
+        if (!r) { effect.push(CAP[c] ? 'cap ' + CAP[c][0] + '%' : '–'); return; }
+        var before = lost[r[0]], already = Math.min((count[c] - 1) * r[1], r[2]);
+        var add = r[3] === 'once' ? (count[c] === 1 ? r[1] : 0) : Math.min(count[c] * r[1], r[2]) - already;
+        add = Math.max(0, Math.min(add, COMP[r[0]][1] - before));
+        lost[r[0]] += add; effect.push(add ? '−' + add : '0 (ceiling)');
+      });
+      lost.age = Math.min(5, Math.round(g.h / 8760 * 10) / 10);
+      var s = 100; for (k in lost) s -= lost[k];
+      var verdict = '', cap = 100;
+      for (k in CAP) if (count[k] && CAP[k][0] < cap) { cap = CAP[k][0]; verdict = CAP[k][1]; }
+      var gmax = Math.max.apply(null, GROUP.map(function (c) { return count[c] || 0; }));
+      if (gmax >= 2 && 49 < cap) { cap = 49; verdict = 'Repeated uncorrectable memory errors: not for sale'; }
+      else if (gmax === 1 && 74 < cap) { cap = 74; verdict = 'Uncorrectable memory error (Xid 48 or row remap): sell only with disclosure'; }
+      s = Math.round(Math.min(s, cap) * 10) / 10;
+      var b = BANDS.filter(function (x) { return s >= x[0]; })[0];
+      return { s: s, lost: lost, effect: effect, verdict: verdict, band: b };
+    }
+    GPUS.forEach(function (g) { g.r = score(g); });
+
+    // ---- topology
+    var svg = $('fr-svg'), NS = 'http://www.w3.org/2000/svg';
+    function el(n, a, p) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); (p || svg).appendChild(e); return e; }
+    var RC = [380, 30], SWX = [110, 290, 470, 650], SWY = 105, GY = 205, edges = {};
+    var rc = el('g', { class: 'hub' }); el('rect', { x: 320, y: 12, width: 120, height: 34, rx: 7 }, rc);
+    el('text', { x: 380, y: 34, 'text-anchor': 'middle' }, rc).textContent = 'CPU root complex';
+    SWX.forEach(function (x, i) {
+      edges['sw' + i] = el('path', { class: 'edge', d: 'M380 46 C380 75 ' + x + ' 70 ' + x + ' ' + (SWY - 14) });
+      var h = el('g', { class: 'hub' }); el('rect', { x: x - 42, y: SWY - 14, width: 84, height: 28, rx: 6 }, h);
+      el('text', { x: x, y: SWY + 4, 'text-anchor': 'middle' }, h).textContent = 'PCIe SW' + i;
+    });
+    GPUS.forEach(function (g, i) {
+      var x = SWX[g.sw] + (i % 2 ? 45 : -45); g.x = x;
+      edges[g.id] = el('path', { class: 'edge', d: 'M' + SWX[g.sw] + ' ' + (SWY + 14) + ' L' + x + ' ' + (GY - 26) });
+      var n = el('g', { class: 'node', tabindex: 0, role: 'button', 'aria-label': g.id + ' ' + g.m + ', score ' + g.r.s + ' %' });
+      el('circle', { class: 'halo', cx: x, cy: GY, r: 30, stroke: g.r.band[3] }, n);
+      el('circle', { class: 'ring', cx: x, cy: GY, r: 23, stroke: g.r.band[3] }, n);
+      el('text', { class: 'val', x: x, y: GY + 4, 'text-anchor': 'middle' }, n).textContent = g.r.s.toFixed(1);
+      el('text', { x: x, y: GY + 44, 'text-anchor': 'middle' }, n).textContent = g.id.replace('GPU-', 'GPU ');
+      n.addEventListener('click', function () { select(g.id); });
+      n.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(g.id); } });
+      g.node = n;
+    });
+
+    // ---- legend
+    $('fr-legend').innerHTML = BANDS.map(function (b) {
+      var n = GPUS.filter(function (g) { return g.r.band === b; }).length;
+      return '<span><i class="dot" style="background:' + b[2] + '"></i>' + b[1].charAt(0).toUpperCase() + b[1].slice(1) + ' (' + n + ')</span>';
+    }).join('');
+
+    // ---- state
+    var state = { band: 'all', model: 'all', sel: 'GPU-03' };
+    function visible(g) { return (state.band === 'all' || g.r.band[1] === state.band) && (state.model === 'all' || g.m === state.model); }
+
+    function renderList() {
+      var vis = GPUS.filter(visible);
+      $('fr-grid').innerHTML = vis.map(function (g) {
+        return '<button type="button" class="card" data-id="' + g.id + '" aria-pressed="' + (g.id === state.sel) + '">' +
+          '<span class="r1"><i class="dot" style="background:' + g.r.band[2] + '"></i><span class="nm">' + g.id + '</span>' +
+          '<span class="tag">' + g.m + '</span><span class="sc">' + g.r.s.toFixed(1) + ' %</span></span>' +
+          '<span class="r2"><span>' + g.bdf + '</span><span>' + g.r.band[1] + '</span></span>' +
+          '<span class="bar"><i style="width:' + g.r.s + '%;background:' + g.r.band[2] + '"></i></span></button>';
+      }).join('') || '<p style="margin:0;color:var(--muted)">No GPU matches these filters.</p>';
+      $('fr-h').textContent = 'GPUs on this server (' + vis.length + ' of ' + GPUS.length + ')';
+      $('fr-n').textContent = vis.length;
+      $('fr-avg').textContent = vis.length ? (vis.reduce(function (a, g) { return a + g.r.s; }, 0) / vis.length).toFixed(1) + ' %' : '–';
+      GPUS.forEach(function (g) {
+        g.node.classList.toggle('dim', !visible(g));
+        g.node.classList.toggle('sel', g.id === state.sel);
+        edges[g.id].classList.toggle('hot', g.id === state.sel);
+        edges['sw' + g.sw].classList.toggle('hot', GPUS.some(function (x) { return x.id === state.sel && x.sw === g.sw; }));
+      });
+    }
+
+    function renderDetail() {
+      var g = GPUS.filter(function (x) { return x.id === state.sel; })[0], r = g.r;
+      $('fr-selk').textContent = g.id;
+      var comps = Object.keys(COMP).map(function (k) {
+        var lost = r.lost[k], max = COMP[k][1];
+        return '<div class="comp"><span>' + COMP[k][0] + '</span><em>' + (lost ? '−' + lost.toFixed(1) : '0') + ' / ' + max + '</em>' +
+          '<span class="bar"><i style="width:' + (lost / max * 100) + '%;background:' + (lost ? 'var(--bad)' : 'var(--ok)') + '"></i></span></div>';
+      }).join('');
+      var ev = g.ev.length ? g.ev.map(function (e, i) {
+        return '<li><span class="g"><code>' + e[0] + '</code><span class="eff">' + r.effect[i] + '</span></span>' +
+          '<span class="fr-src">' + e[1] + ' · ' + e[2].replace(/</g, '&lt;') + '</span></li>';
+      }).join('') : '<li><span class="fr-src">No error events in the logs. Only age in service is deducted.</span></li>';
+      $('fr-det').innerHTML =
+        '<div class="d-h"><h4>Health card: <span>' + g.id + '</span></h4>' +
+        '<span class="chip" style="background:' + r.band[2] + '">' + r.band[1] + '</span></div>' +
+        '<div class="d-meta"><div><span>PCIe address</span><b>' + g.bdf + '</b></div>' +
+        '<div><span>Model</span><b>' + g.m + '</b></div>' +
+        '<div><span>Hours in service</span><b>' + g.h.toLocaleString('en-US') + '</b></div>' +
+        '<div><span>Health score</span><b>' + r.s.toFixed(1) + ' / 100</b></div></div>' +
+        (r.verdict ? '<div class="verdict" style="border-left-color:' + r.band[2] + '"><b>Cap applied:</b> ' + r.verdict + '</div>' : '') +
+        '<div class="d-cols"><div><h5>Where the points went</h5>' + comps + '</div>' +
+        '<div><h5>Evidence: log line → concept → effect</h5><ul class="ev">' + ev + '</ul></div></div>';
+    }
+
+    function select(id) { state.sel = id; renderList(); renderDetail(); }
+
+    $('fr-grid').addEventListener('click', function (e) { var c = e.target.closest('.card'); if (c) select(c.dataset.id); });
+    $('fr-band').addEventListener('change', function () { state.band = this.value; renderList(); });
+    $('fr-model').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      state.model = b.dataset.m;
+      this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      renderList();
+    });
+    select(state.sel);
+  })();
+  </script>
+</section>
+
 <section id="who">
   <div class="wrap">
     <div class="eyebrow">Who it is for</div>
@@ -372,9 +687,9 @@ footer nav{flex-wrap:wrap}
       </div>
 
       <div class="fc-kpis" aria-live="polite">
-        <div><span>Per GPU</span><b id="k-gpu">$25</b></div>
-        <div class="hl"><span>Per review</span><b id="k-run">$14,925</b></div>
-        <div><span>Per year (estimate)</span><b id="k-year">$35,820</b></div>
+        <div><span>Per GPU</span><b id="k-gpu">€22</b></div>
+        <div class="hl"><span>Per review</span><b id="k-run">€13,350</b></div>
+        <div><span>Per year (estimate)</span><b id="k-year">€32,040</b></div>
       </div>
 
       <div class="fc-ctl">
@@ -410,7 +725,7 @@ footer nav{flex-wrap:wrap}
         <h3>Included in this tier</h3>
         <ul id="fc-inc"></ul>
       </div>
-      <div class="fc-foot">Estimate only, in USD, excluding VAT. The score describes each GPU's history; it is not a failure forecast. Final price is confirmed in writing before work starts.</div>
+      <div class="fc-foot">Estimate only, in euro, excluding VAT. The score describes each GPU's history; it is not a failure forecast. Final price is confirmed in writing before work starts.</div>
     </div>
   </div>
 
@@ -420,16 +735,16 @@ footer nav{flex-wrap:wrap}
     if (!root) return;
     var $ = function (id) { return root.querySelector('#' + id); };
     var gpusEl = $('fc-gpus'), freqEl = $('fc-freq'), tierEl = $('fc-tier'), rack = $('fc-rack');
-    var TILES = 24, GPN = 8, BASE = 299, CIRC = 2 * Math.PI * 44;
+    var TILES = 24, GPN = 8, BASE = 267, CIRC = 2 * Math.PI * 44;
 
     var TIERS = {
       pilot: { name: 'Pilot', rate: 0, minNodes: 1,
         inc: ['Health card for every GPU', 'Server summary', 'Vocabulary checked by hand'] },
-      transactional: { name: 'Transactional Audit', rate: 299, minNodes: 2,
+      transactional: { name: 'Transactional Audit', rate: 267, minNodes: 2,
         inc: ['Health card for every GPU', 'BMC, kernel and DCGM logs combined', 'Fleet summary'] },
-      volume: { name: 'High-Volume Fleet', rate: 199, minNodes: 25,
+      volume: { name: 'High-Volume Fleet', rate: 178, minNodes: 25,
         inc: ['Everything in Transactional', 'Batch intake', 'Vocabulary tuned to your hardware', 'Masking checked on every batch'] },
-      institutional: { name: 'Institutional', rate: 199, minNodes: 100,
+      institutional: { name: 'Institutional', rate: 178, minNodes: 100,
         inc: ['Everything in High-Volume Fleet', 'Degradation trends across reviews',
               'Collateral valuation at 0.1% of fleet value — <a href="mailto:vitali.demille@glyphai.ie?subject=Institutional%20review">email for a quote</a>'] }
     };
@@ -440,7 +755,7 @@ footer nav{flex-wrap:wrap}
     var tiles = rack.children;
     $('fc-arc').setAttribute('stroke-dasharray', CIRC);
 
-    var usd = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
+    var usd = function (n) { return '€' + Math.round(n).toLocaleString('en-IE'); };
     var fill = function (el) { el.style.setProperty('--fill', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); };
     function tierFor(nodes) {
       if (nodes <= 1) return 'pilot';
@@ -460,7 +775,7 @@ footer nav{flex-wrap:wrap}
       $('fc-freq-h').textContent = '≈ ' + (Math.round(perYear * 10) / 10) + ' reviews per year';
       tierEl.value = key;
 
-      $('k-gpu').textContent = key === 'pilot' ? '$0' : usd(t.rate / GPN);
+      $('k-gpu').textContent = key === 'pilot' ? '€0' : usd(t.rate / GPN);
       $('k-run').textContent = usd(run);
       $('k-year').textContent = key === 'pilot' ? 'One-off' : usd(run * perYear);
 
