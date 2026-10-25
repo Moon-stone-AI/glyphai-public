@@ -67,7 +67,7 @@ Honest numbers: at L1–L2, plain gzip compresses better. What gzip cannot do is
 **Vitali de Mille**: 20+ years in mission-critical and hyperscale data centres (Equinix, Microsoft), from live-site operations to hardware fleet reliability. GlyphAI grew out of two long interests: how meaning survives translation between languages, and how the truth about a failure hides inside millions of log lines.
 
 - LinkedIn: https://www.linkedin.com/in/vitali-de-mille-14598034/
-- Email: de.mille@outlook.com
+- Email:Vitali.deMIlle@glyphai.ie
 
 ## License
 
