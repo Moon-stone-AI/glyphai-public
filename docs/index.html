@@ -1,969 +1,1019 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GPU Health Report</title>
-<meta name="description" content="A health score from 0 to 100 % for every data center GPU, read from its own logs.">
-<link rel="canonical" href="https://gpu.glyphai.ie/">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://gpu.glyphai.ie/">
-<meta property="og:title" content="Know a GPU's history before you buy it">
-<meta property="og:description" content="A 0–100 % health score for every data centre GPU, read from its own logs. Free pilot for H100/H200 fleets.">
-<meta property="og:image" content="https://gpu.glyphai.ie/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://gpu.glyphai.ie/og.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<style>
-/* Layout: an inspection report. Hero = a live sample report card; below, one column of short sections with a rules ledger. */
-/* Brand: GlyphAI navy #071A3D / #0D3261, blue #2F689A, teal #33AFA9; Montserrat display, Inter body */
-:root{
-  --bg:#f3f6fa; --paper:#ffffff; --ink:#071A3D; --muted:#4a5b74; --line:#d6deea;
-  --accent:#2F689A; --teal:#1f8a85; --accent-soft:#e2f1f0;
-  --ok:#2f8a4c; --good:#2F689A; --warn:#b7791f; --bad:#c2410c;
-  --track:#e6ebf2; --hero:#071A3D; --hero-ink:#ffffff; --hero-muted:#b4c4da;
-  --f-display:"Montserrat", "Segoe UI", system-ui, sans-serif;
-  --f-body:"Inter", "Segoe UI", system-ui, sans-serif;
-  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#071A3D; --paper:#0D3261; --ink:#eef3fa; --muted:#a3b5cf; --line:#1d4170;
-  --accent:#6aa3d8; --teal:#33AFA9; --accent-soft:#0b2a50;
-  --ok:#4cc275; --good:#6aa3d8; --warn:#e0a443; --bad:#f2774a; --track:#173a66;
-  --hero:#051330; --hero-ink:#ffffff; --hero-muted:#a3b5cf; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#071A3D; --paper:#0D3261; --ink:#eef3fa; --muted:#a3b5cf; --line:#1d4170;
-  --accent:#6aa3d8; --teal:#33AFA9; --accent-soft:#0b2a50;
-  --ok:#4cc275; --good:#6aa3d8; --warn:#e0a443; --bad:#f2774a; --track:#173a66;
-  --hero:#051330; --hero-ink:#ffffff; --hero-muted:#a3b5cf; color-scheme:dark}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPU Health Score & Predictive Telemetry · gpu.glyphai.ie</title>
+    <meta name="description" content="Deep Analytics & Simulation: GPU Health Score (0–100%). Evaluates HBM3 ECC decay, thermal Arrhenius stress, NVLink degradation, and 30-day survival probability across H100/H200 clusters." />
+    <link rel="canonical" href="https://gpu.glyphai.ie/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://gpu.glyphai.ie/" />
+    <meta property="og:title" content="Deep Analytics & Simulation: GPU Health Score · GlyphAI" />
+    <meta property="og:description" content="Full analytical implementation of the mathematical GPU health index from codebook/health_v0.2.1.yaml & glyphrca/health.py." />
+    <meta property="og:image" content="https://gpu.glyphai.ie/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: #020617; }
+      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+  <script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
+  <body class="bg-slate-950 text-slate-100 antialiased font-sans selection:bg-cyan-500/20 selection:text-cyan-200 min-h-screen flex flex-col">
 
-*{box-sizing:border-box}
-html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0}
-img{max-width:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.wrap{max-width:1080px;margin:0 auto}
-a{color:var(--accent)}
-a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
-h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.1;margin:0}
-.mono{font-family:var(--f-mono)}
-.eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+    <!-- Top Global Header -->
+    <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 py-3.5">
+      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+        <a href="https://gpu.glyphai.ie/" class="flex items-baseline gap-2 shrink-0">
+          <span class="text-xl font-bold tracking-tight text-white">GlyphAI</span>
+          <span class="text-xs font-mono text-cyan-400 font-semibold tracking-wider">/ GPU HEALTH SCORE</span>
+        </a>
 
-.heroband{background:var(--hero);color:var(--hero-ink);
-  margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-  background-image:radial-gradient(80% 120% at 85% 10%, rgba(47,104,154,.45), transparent 60%)}
-.heroband .eyebrow{color:#33AFA9}
-.heroband nav a{color:var(--hero-muted)} .heroband nav a:hover{color:var(--hero-ink)}
-.heroband .hero p.lead{color:var(--hero-muted)}
-.heroband .cta{background:#33AFA9;color:#071A3D}
-.heroband .cta.ghost{background:transparent;color:var(--hero-ink);border-color:rgba(255,255,255,.3)}
-.heroband .report{color:var(--ink)}
-header.top{display:flex;justify-content:space-between;align-items:center;padding-block:22px;gap:16px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px;font-family:var(--f-display);font-weight:700;font-size:21px;letter-spacing:-.01em}
-.brand img{width:40px;height:40px}
-.brand span{font-weight:600;font-size:15px;color:#33AFA9;letter-spacing:.02em}
-nav{display:flex;gap:20px;font-size:15px}
-nav a{color:var(--muted);text-decoration:none}
-nav a:hover{color:var(--ink)}
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-6 text-xs font-medium text-slate-400">
+          <a href="#simulator" class="text-cyan-400 font-semibold border-b-2 border-cyan-400 pb-0.5 flex items-center gap-1.5" data-i18n="nav_sim">
+            <span>⚡ GPU Health Score</span>
+          </a>
+          <a href="#superpod" class="hover:text-cyan-300 transition-colors" data-i18n="nav_cluster">SuperPOD 64-GPU Heatmap</a>
+          <a href="#python-engine" class="hover:text-cyan-300 transition-colors" data-i18n="nav_python">glyphrca/health.py</a>
+          <a href="fleet-rca.html" class="hover:text-cyan-300 transition-colors">Fleet RCA (5,000 H100s)</a>
+          <a href="hopper-retirement.html" class="hover:text-cyan-300 transition-colors">Hopper Retirement</a>
+          <a href="https://verter.glyphai.ie/" class="hover:text-cyan-300 transition-colors font-mono text-emerald-400">verter.glyphai.ie ↗</a>
+        </nav>
 
-.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;padding-block:36px 64px}
-.hero > *{min-width:0}
-.hero h1{font-size:clamp(34px,4.8vw,58px);font-weight:800;letter-spacing:-.02em;margin-top:14px}
-.hero p.lead{font-size:19px;color:var(--muted);max-width:34em;margin:22px 0 28px}
-.cta{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);border:0;border-radius:8px;
-  padding:13px 20px;font:600 16px var(--f-body);text-decoration:none;cursor:pointer}
-.cta.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
-.ctas{display:flex;gap:12px;flex-wrap:wrap}
-
-/* the report card */
-.report{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 22px 14px;
-  box-shadow:0 20px 50px -30px rgba(20,32,43,.35)}
-.report-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:6px;flex-wrap:wrap}
-.report-head b{font-family:var(--f-display);font-size:18px}
-.report-head span{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-.gpu{display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:12px 0;border-bottom:1px solid var(--line)}
-.gpu:last-child{border-bottom:0}
-.gpu .id{font-weight:600}
-.gpu .id small{font-family:var(--f-mono);font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
-.gpu .score{font-family:var(--f-display);font-weight:700;font-size:22px;text-align:right;font-variant-numeric:tabular-nums}
-.gpu .why{font-size:14px;color:var(--muted);min-width:0}
-.gpu .band{font-size:13px;font-weight:600;text-align:right;white-space:nowrap}
-.bar{grid-column:1 / -1;height:6px;background:var(--track);border-radius:3px;overflow:hidden;margin-top:6px}
-.bar i{display:block;height:100%;border-radius:3px}
-.b-ok{color:var(--ok)} .b-good{color:var(--good)} .b-warn{color:var(--warn)} .b-bad{color:var(--bad)}
-.f-ok{background:var(--ok)} .f-good{background:var(--good)} .f-warn{background:var(--warn)} .f-bad{background:var(--bad)}
-.report-foot{font-size:12.5px;color:var(--muted);padding-top:10px}
-
-section{padding-block:56px;border-top:1px solid var(--line)}
-section h2{font-size:clamp(28px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;margin:10px 0 16px}
-section > .wrap > p{max-width:40em;color:var(--muted);margin:0 0 28px}
-
-.sources{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-.src{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
-.src b{display:block;font-size:15.5px;margin-bottom:4px}
-.src span{font-size:14px;color:var(--muted)}
-
-.ledger{width:100%;border-collapse:collapse;font-size:15.5px;background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.ledger th{text-align:left;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:12px 16px;border-bottom:1px solid var(--line)}
-.ledger td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top}
-.ledger tr:last-child td{border-bottom:0}
-.ledger td:last-child{font-family:var(--f-mono);white-space:nowrap;font-variant-numeric:tabular-nums}
-.table-scroll{overflow-x:auto}
-
-.who{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
-.who > div{min-width:0}
-.who h3{font-size:20px;margin-bottom:6px}
-.who p{margin:0;color:var(--muted);font-size:16px}
-
-.limits{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 32px;padding:0;margin:0;list-style:none}
-.limits li{padding-left:22px;position:relative;color:var(--muted)}
-.limits li::before{content:"";position:absolute;left:0;top:.62em;width:10px;height:2px;background:var(--accent)}
-.limits b{color:var(--ink);font-weight:600}
-
-.pilot{background:var(--accent-soft);border-radius:14px;padding:36px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
-.pilot > *{min-width:0}
-.pilot h2{margin-top:0}
-.pilot p{margin:0;color:var(--muted)}
-.email{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.email code{font-family:var(--f-mono);font-size:17px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:11px 14px;user-select:all;word-break:break-all}
-#copy-note{font-size:13px;color:var(--muted);min-height:1.2em;margin-top:8px}
-
-footer{padding-block:32px 48px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14.5px;color:var(--muted)}
-footer nav{flex-wrap:wrap}
-
-@media (max-width:900px){
-  .hero{grid-template-columns:1fr;gap:36px}
-  .sources{grid-template-columns:repeat(2,1fr)}
-  .who{grid-template-columns:1fr;gap:20px}
-  .pilot{grid-template-columns:1fr;padding:24px}
-}
-@media (max-width:520px){
-  .sources{grid-template-columns:1fr}
-  .limits{grid-template-columns:1fr}
-  nav.main{display:none}
-}
-@media (prefers-reduced-motion:no-preference){
-  .bar i{animation:fill 1.1s cubic-bezier(.2,.7,.2,1) both}
-  @keyframes fill{from{transform:scaleX(.08);transform-origin:left}to{transform:scaleX(1);transform-origin:left}}
-}
-</style>
-</head>
-<body>
-
-<div class="heroband">
-<div class="wrap">
-  <header class="top">
-    <div class="brand"><img src="data:image/png;base64,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" alt="GlyphAI logo">GlyphAI <span>GPU Health</span></div>
-    <nav class="main" aria-label="Sections">
-      <a href="#how">How it works</a>
-      <a href="#rules">Rules</a>
-      <a href="#limits">Limits</a>
-      <a href="#pilot">Free pilot</a>
-      <a href="hopper-retirement.html">Articles</a>
-    </nav>
-  </header>
-
-  <div class="hero">
-    <div>
-      <div class="eyebrow">For used H100 and H200 fleets</div>
-      <h1>Know a GPU's history before you buy it.</h1>
-      <p class="lead">Every data center GPU gets a health score from 0 to 100 %, read from its own logs: memory errors, Xid events, link faults, throttling and failed diagnostics. Every deduction is shown, so buyer and seller look at the same evidence.</p>
-      <div class="ctas">
-        <a class="cta" href="#pilot">Get a free pilot report</a>
-        <a class="cta ghost" href="https://github.com/Moon-stone-AI/glyph-fleet-rca">See the code</a>
-      </div>
-      <p style="margin:18px 0 0;font-size:15px"><a href="hopper-retirement.html" style="color:#33AFA9">Read: The Hopper Retirement →</a><br><a href="fleet-rca.html" style="color:#33AFA9">Read: When Thousands of Servers Fail at Once →</a></p>
-      <div hidden>
-      </div>
-    </div>
-
-    <figure class="report" style="margin:0" aria-label="Sample health report">
-      <div class="report-head"><b>Sample report</b><span>node-00307 · 5 of 8 GPUs</span></div>
-      <div class="gpu">
-        <div class="id">H100<small>0000:1b:00.0</small></div><div class="score">97.6 %</div>
-        <div class="why">Age −2.4</div><div class="band b-ok">excellent</div>
-        <div class="bar"><i class="f-ok" style="width:97.6%"></i></div>
-      </div>
-      <div class="gpu">
-        <div class="id">H200<small>0000:43:00.0</small></div><div class="score">88.1 %</div>
-        <div class="why">Link trained at x8: −10 · age −1.9</div><div class="band b-good">good</div>
-        <div class="bar"><i class="f-good" style="width:88.1%"></i></div>
-      </div>
-      <div class="gpu">
-        <div class="id">H100<small>0000:25:00.0</small></div><div class="score">74 %</div>
-        <div class="why">Xid 48 and its row remap: one uncorrectable incident</div><div class="band b-warn">caution</div>
-        <div class="bar"><i class="f-warn" style="width:74%"></i></div>
-      </div>
-      <div class="gpu">
-        <div class="id">H100<small>0000:9a:00.0</small></div><div class="score">30 %</div>
-        <div class="why">Memory banks with no spare rows left</div><div class="band b-bad">do not sell</div>
-        <div class="bar"><i class="f-bad" style="width:30%"></i></div>
-      </div>
-      <div class="gpu">
-        <div class="id">H200<small>0000:c1:00.0</small></div><div class="score">10 %</div>
-        <div class="why">Failed matrix-math test: possible silent data corruption</div><div class="band b-bad">do not sell</div>
-        <div class="bar"><i class="f-bad" style="width:10%"></i></div>
-      </div>
-      <figcaption class="report-foot">Example from a synthetic fleet. Bands: 90+ excellent · 75+ good · 50+ caution · below 50 do not sell.</figcaption>
-    </figure>
-  </div>
-</div>
-</div>
-
-<section id="how">
-  <div class="wrap">
-    <div class="eyebrow">How it works</div>
-    <h2>Five sources, one language</h2>
-    <p>The logs already sit on the servers being sold. We read them before decommissioning, translate every vendor's wording into one set of concepts, and tie each event to a GPU by its PCIe address. Nothing is installed on the servers: one <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca/blob/main/tools/glyph-collect.sh">read-only script</a> gathers the logs into an archive you review first, and the analysis runs offline on the copy.</p>
-    <div class="sources">
-      <div class="src"><b>BMC logs</b><span>IPMI SEL, Dell iDRAC, Lenovo XCC and HPE iLO messages, read from the vendors' own guides</span></div>
-      <div class="src"><b>Kernel log</b><span>NVIDIA Xid codes, PCIe AER, MCE, EDAC</span></div>
-      <div class="src"><b>DCGM telemetry</b><span>ECC counters, row remapping, NVLink CRC, throttling; or the card's own memory of remapped rows from nvidia-smi</span></div>
-      <div class="src"><b>Diagnostics</b><span>dcgmi diag results, including matrix-math tests</span></div>
-      <div class="src"><b>PCIe tree</b><span>Missing and degraded links, switch versus GPU</span></div>
-    </div>
-  </div>
-</section>
-
-<section id="rules">
-  <div class="wrap">
-    <div class="eyebrow">What moves the score</div>
-    <h2>Rules from fleet practice</h2>
-    <p>The score starts at 100 and loses points in six areas, each with a ceiling. A few findings cap the score outright, whatever else the card's history shows.</p>
-    <div class="table-scroll">
-      <table class="ledger">
-        <thead><tr><th>Finding</th><th>Effect</th><th>Score</th></tr></thead>
-        <tbody>
-          <tr><td>Failed matrix-math diagnostic</td><td>Possible silent data corruption: keep out of any cluster</td><td>≤ 10 %</td></tr>
-          <tr><td>Row remapping failed, spare rows exhausted</td><td>The next bad memory row cannot be repaired</td><td>≤ 10 %</td></tr>
-          <tr><td>Memory banks with no spare rows</td><td>No room left for repairs</td><td>≤ 30 %</td></tr>
-          <tr><td>Repeated uncorrectable memory errors</td><td>Two or more Xid 48 or row-remap incidents</td><td>≤ 49 %</td></tr>
-          <tr><td>One uncorrectable memory error</td><td>Xid 48 and the remap it triggers count as one incident</td><td>≤ 74 %</td></tr>
-          <tr><td>Severe Xid: bus loss, GSP, init failure</td><td>8 points each, up to 25 for the area</td><td>−8</td></tr>
-          <tr><td>Link trained below spec</td><td>From the PCIe tree, e.g. x8 instead of x16</td><td>−10</td></tr>
-          <tr><td>Fleet-wide PCIe storm</td><td>One cause, not thousands of bad cards: not charged to the GPUs</td><td>0</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- Section: Interactive sample report (synthetic fleet, scored with codebook health v0.2.1) -->
-<section id="fleet-report">
-  <style>
-    #fleet-report .fr{background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(7,26,61,.08)}
-    /* topology */
-    #fleet-report .fr-top{background:var(--hero);color:var(--hero-ink);padding:22px 26px 8px}
-    #fleet-report .fr-top .k{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#33AFA9}
-    #fleet-report .fr-top h3{margin:4px 0 0;font-size:19px;color:var(--hero-ink)}
-    #fleet-report .fr-svgwrap{overflow-x:auto}
-    #fleet-report svg{display:block;width:100%;min-width:620px;height:auto}
-    #fleet-report .edge{stroke:rgba(180,196,218,.25);stroke-width:1.5;fill:none;transition:stroke .2s}
-    #fleet-report .edge.hot{stroke:#33AFA9;stroke-width:2.5}
-    #fleet-report .hub rect{fill:#0D3261;stroke:#2F689A;stroke-width:1.5}
-    #fleet-report .hub text,#fleet-report .node text{font-family:var(--f-mono);fill:var(--hero-muted);font-size:11px}
-    #fleet-report .node{cursor:pointer;outline:none}
-    #fleet-report .node .ring{fill:#071A3D;stroke-width:3}
-    #fleet-report .node .halo{fill:none;stroke-width:1.5;opacity:0;transition:opacity .2s}
-    #fleet-report .node.sel .halo,#fleet-report .node:focus-visible .halo{opacity:1}
-    #fleet-report .node .val{fill:#fff;font-size:12px;font-weight:600}
-    #fleet-report .node.dim{opacity:.25}
-    #fleet-report .fr-cap{font-size:12px;color:var(--hero-muted);padding:4px 0 14px}
-    /* legend + kpis */
-    #fleet-report .fr-legend{display:flex;flex-wrap:wrap;gap:8px 22px;padding:12px 26px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted)}
-    #fleet-report .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px}
-    #fleet-report .fr-kpi{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border-bottom:1px solid var(--line)}
-    #fleet-report .fr-kpi div{padding:14px 10px;text-align:center}
-    #fleet-report .fr-kpi span{display:block;font-size:13.5px;color:var(--muted)}
-    #fleet-report .fr-kpi b{display:block;margin-top:2px;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:20px;color:var(--ink)}
-    #fleet-report .fr-kpi b.lnk{color:var(--accent)}
-    /* filters */
-    #fleet-report .fr-flt{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px 26px 6px}
-    #fleet-report .fr-flt label{display:block;font-weight:600;font-size:15px;margin-bottom:8px;color:var(--ink)}
-    #fleet-report select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 15px var(--f-body)}
-    #fleet-report .seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px}
-    #fleet-report .seg button{flex:1;border:0;background:none;padding:8px 10px;border-radius:999px;font:600 14.5px var(--f-body);color:var(--muted);cursor:pointer}
-    #fleet-report .seg button[aria-pressed=true]{background:var(--accent);color:#fff}
-    /* cards */
-    #fleet-report .fr-h{padding:16px 26px 8px;font-weight:600;font-size:15px;color:var(--ink)}
-    #fleet-report .fr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 26px 22px}
-    #fleet-report .card{all:unset;box-sizing:border-box;cursor:pointer;display:block;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--paper);transition:border-color .15s,box-shadow .15s}
-    #fleet-report .card:hover{border-color:var(--accent)}
-    #fleet-report .card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-    #fleet-report .card[aria-pressed=true]{border:2px solid var(--accent);padding:11px 13px;box-shadow:0 2px 10px rgba(47,104,154,.15)}
-    #fleet-report .card > span{display:block}
-    #fleet-report .card .r1{display:flex;align-items:center;gap:8px}
-    #fleet-report .card .nm{font-weight:700;color:var(--ink)}
-    #fleet-report .tag{font-family:var(--f-mono);font-size:11.5px;padding:1px 6px;border-radius:5px;background:var(--accent-soft);color:var(--accent)}
-    #fleet-report .card .sc{margin-left:auto;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
-    #fleet-report .card .r2{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;color:var(--muted);margin:4px 0 8px}
-    #fleet-report .bar{display:block;height:5px;margin-top:0;border-radius:9px;background:var(--track);overflow:hidden}
-    #fleet-report .bar i{display:block;height:100%;border-radius:9px;animation:none}
-    /* detail */
-    #fleet-report .fr-det{margin:0 26px 26px;border:1px solid var(--line);border-radius:14px;background:var(--bg);padding:18px 20px}
-    #fleet-report .d-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    #fleet-report .d-h h4{margin:0;font-size:16.5px;color:var(--ink)}
-    #fleet-report .d-h h4 span{color:var(--accent);font-family:var(--f-mono)}
-    #fleet-report .chip{margin-left:auto;font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:999px;color:#fff}
-    #fleet-report .d-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
-    #fleet-report .d-meta span{display:block;font-size:12.5px;color:var(--muted)}
-    #fleet-report .d-meta b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:15px;color:var(--ink)}
-    #fleet-report .verdict{font-size:14.5px;padding:9px 12px;border-radius:8px;background:var(--paper);border-left:3px solid var(--muted);margin-bottom:14px;color:var(--ink)}
-    #fleet-report .d-cols{display:grid;grid-template-columns:1fr 1.4fr;gap:22px}
-    #fleet-report .d-cols h5{margin:0 0 10px;font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-    #fleet-report .comp{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13.5px;margin-bottom:9px;color:var(--ink)}
-    #fleet-report .comp em{font-style:normal;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
-    #fleet-report .comp .bar{grid-column:1/-1;height:4px}
-    #fleet-report .ev{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-    #fleet-report .ev li{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
-    #fleet-report .ev .g{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
-    #fleet-report .ev code{font-family:var(--f-mono);font-size:12.5px;font-weight:600;color:var(--teal)}
-    #fleet-report .ev .eff{margin-left:auto;font-family:var(--f-mono);font-size:12.5px;color:var(--bad)}
-    #fleet-report .ev .fr-src{display:block;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);margin-top:4px;word-break:break-word}
-    #fleet-report .fr-foot{padding:0 26px 20px;font-size:12.5px;color:var(--muted)}
-    #fleet-report .fr-foot a{color:var(--accent)}
-    @media (max-width:900px){
-      #fleet-report .d-cols{grid-template-columns:1fr}
-      #fleet-report .d-meta{grid-template-columns:1fr 1fr}
-    }
-    @media (max-width:600px){
-      #fleet-report .fr-top,#fleet-report .fr-legend{padding-left:16px;padding-right:16px}
-      #fleet-report .fr-flt{grid-template-columns:1fr;padding:16px 16px 4px}
-      #fleet-report .fr-h{padding:14px 16px 8px}
-      #fleet-report .fr-grid{grid-template-columns:1fr;padding:0 16px 18px}
-      #fleet-report .fr-det{margin:0 16px 18px;padding:16px}
-      #fleet-report .fr-foot{padding:0 16px 18px}
-      #fleet-report .chip{margin-left:0}
-    }
-  </style>
-
-  <div class="wrap">
-    <div class="eyebrow">Interactive sample report</div>
-    <h2>One server, eight GPUs, every deduction shown</h2>
-    <p>Select a GPU to see the log lines behind its score, the concept each line was translated into, and what it cost. The fleet is synthetic; the rules are the published ones.</p>
-
-    <div class="fr">
-      <div class="fr-top">
-        <div class="k">GlyphAI · GPU health</div>
-        <h3>node-3f9a2c41d0 · HGX 8-GPU server</h3>
-        <div class="fr-svgwrap"><svg id="fr-svg" viewBox="0 0 760 250" role="group" aria-label="PCIe topology of the sample server"></svg></div>
-        <div class="fr-cap">Illustrative PCIe tree: CPU root complex → four PCIe switches → two GPUs each. Ring colour = band, number = score.</div>
-      </div>
-
-      <div class="fr-legend" id="fr-legend"></div>
-
-      <div class="fr-kpi">
-        <div><span>Average score</span><b id="fr-avg">–</b></div>
-        <div><span>GPUs shown</span><b id="fr-n">–</b></div>
-        <div><span>Selected</span><b class="lnk" id="fr-selk">–</b></div>
-      </div>
-
-      <div class="fr-flt">
-        <div>
-          <label for="fr-band">Filter by band</label>
-          <select id="fr-band">
-            <option value="all">All GPUs</option>
-            <option value="excellent">Excellent (90+)</option>
-            <option value="good">Good (75–89)</option>
-            <option value="caution">Caution (50–74)</option>
-            <option value="do not sell">Do not sell (below 50)</option>
-          </select>
+        <div class="flex items-center gap-2.5 shrink-0">
+          <div class="flex items-center rounded-lg bg-slate-900 border border-slate-800 p-0.5 text-xs font-mono">
+            <button id="langEnBtn" onclick="switchLanguage('en')" class="px-2.5 py-1 rounded transition-colors font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer">EN</button>
+            <button id="langRuBtn" onclick="switchLanguage('ru')" class="px-2.5 py-1 rounded transition-colors text-slate-400 hover:text-slate-200 cursor-pointer">RU</button>
+          </div>
+          <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-mono font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 rounded-lg border border-slate-800 transition-colors">
+            glyph-fleet-rca ↗
+          </a>
+          <a href="https://verter.glyphai.ie/" class="px-3.5 py-1.5 text-xs font-mono font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-all">
+            Verter Mind ↗
+          </a>
         </div>
-        <div>
-          <label id="fr-model-l">Model</label>
-          <div class="seg" role="group" aria-labelledby="fr-model-l" id="fr-model">
-            <button type="button" data-m="all" aria-pressed="true">All</button>
-            <button type="button" data-m="H100" aria-pressed="false">H100</button>
-            <button type="button" data-m="H200" aria-pressed="false">H200</button>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-8 pb-16">
+
+      <!-- Top Banner / Context -->
+      <section id="simulator" class="bg-gradient-to-r from-slate-900 via-slate-900/90 to-cyan-950/40 border border-slate-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+          <div class="space-y-2 max-w-3xl">
+            <div class="flex flex-wrap items-center gap-2 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">
+              <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              <span data-i18n="banner_tag">GPU HEALTH INDEX & PREDICTIVE TELEMETRY · VERTER V0.2.1</span>
+              <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca/blob/main/codebook/health_v0.2.1.yaml" target="_blank" rel="noopener noreferrer" class="px-2 py-0.5 rounded text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800/80 hover:bg-cyan-900/60 transition-colors">
+                MOON-STONE-AI / GLYPH-FLEET-RCA
+              </a>
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight" data-i18n="banner_title">
+              Deep Analytics & Simulation: GPU Health Score
+            </h1>
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed" data-i18n="banner_desc">
+              Full analytical implementation of the mathematical GPU health index from <code class="text-cyan-300 font-mono">codebook/health_v0.2.1.yaml</code> &amp; <code class="text-cyan-300 font-mono">glyphrca/health.py</code>. Evaluates HBM3 ECC decay, thermal Arrhenius stress, NVLink degradation, and 30-day survival probability.
+            </p>
+          </div>
+
+          <!-- Quick preset selector -->
+          <div class="flex flex-col gap-2 w-full lg:w-auto shrink-0">
+            <span class="text-xs font-mono text-slate-400 font-semibold" data-i18n="inject_label">
+              Inject failure vector:
+            </span>
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <button onclick="applyPreset('healthy')" class="px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-600/40 text-emerald-300 hover:bg-emerald-900/50 transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                <span>✓</span>
+                <span>Healthy Base</span>
+              </button>
+              <button onclick="applyPreset('thermal')" class="px-3 py-1.5 rounded-lg bg-amber-950/40 border border-amber-600/40 text-amber-300 hover:bg-amber-900/50 transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                <span>🔥</span>
+                <span>Thermal 93°C</span>
+              </button>
+              <button onclick="applyPreset('remap')" class="px-3 py-1.5 rounded-lg bg-purple-950/40 border border-purple-600/40 text-purple-300 hover:bg-purple-900/50 transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                <span>💾</span>
+                <span>Row Remap (Xid 64)</span>
+              </button>
+              <button onclick="applyPreset('interconnect')" class="px-3 py-1.5 rounded-lg bg-blue-950/40 border border-blue-600/40 text-blue-300 hover:bg-blue-900/50 transition-colors cursor-pointer text-left flex items-center gap-1.5">
+                <span>⚡</span>
+                <span>NVLink CRC Storm</span>
+              </button>
+              <button onclick="applyPreset('dbe_fatal')" class="col-span-2 px-3 py-1.5 rounded-lg bg-rose-950/50 border border-rose-600/50 text-rose-300 hover:bg-rose-900/60 transition-colors cursor-pointer text-center flex items-center justify-center gap-1.5">
+                <span>⊗</span>
+                <span>Fatal DBE / RMA Trigger</span>
+              </button>
+            </div>
           </div>
         </div>
+      </section>
+
+      <!-- Main Grid: Card Details & Live Health Score Calculation -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Column: Interactive Telemetry Controls (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-5">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="text-cyan-400 font-mono">🎚️</span>
+                <span data-i18n="card_telemetry_title">Card Telemetry & Parameters</span>
+              </h2>
+              <span id="gpuModelBadge" class="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/60">
+                H100-SXM5-80GB
+              </span>
+            </div>
+
+            <!-- Hardware ID and Service Hours -->
+            <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+              <div className="p-3 bg-slate-950/70 rounded-xl border border-slate-800" style="padding:0.75rem;background:rgba(2,6,23,0.7);border-radius:0.75rem;border:1px solid #1e293b;">
+                <div class="text-slate-400 mb-1" data-i18n="host_label">Host / Server</div>
+                <div id="gpuHostVal" class="text-white font-semibold truncate">node04.superpod.internal</div>
+                <div id="gpuBdfVal" class="text-[11px] text-slate-400 mt-0.5 truncate">0000:4b:00.0</div>
+              </div>
+              <div style="padding:0.75rem;background:rgba(2,6,23,0.7);border-radius:0.75rem;border:1px solid #1e293b;">
+                <div class="text-slate-400 mb-1" data-i18n="hours_label">Hours in Service</div>
+                <div class="text-white font-semibold flex items-baseline gap-1.5">
+                  <span id="gpuHoursVal">4,820 h</span>
+                  <span id="gpuYearsVal" class="text-[11px] text-cyan-400">(0.6 yr)</span>
+                </div>
+                <div id="gpuAgePenSub" class="text-[11px] text-slate-400 mt-0.5">-0.6 pts age pen</div>
+              </div>
+            </div>
+
+            <!-- Slider 1: Junction Temperature -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-300 font-medium flex items-center gap-1.5">
+                  <span class="text-amber-400">🔥</span>
+                  <span data-i18n="temp_label">Junction Temperature</span>
+                </span>
+                <span id="tempValDisplay" class="font-mono font-bold text-emerald-400">64°C</span>
+              </div>
+              <input id="tempSlider" type="range" min="45" max="102" value="64" oninput="onControlChange()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-400">
+                <span>45°C Normal</span>
+                <span>75°C Baseline</span>
+                <span>88°C Throttle</span>
+                <span>95°C Critical</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: Hotspot Delta -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-300 font-medium flex items-center gap-1.5">
+                  <span class="text-cyan-400">📈</span>
+                  <span data-i18n="delta_label">Hotspot Gradient (ΔT)</span>
+                </span>
+                <span id="deltaValDisplay" class="font-mono font-bold text-slate-200">8.5°C</span>
+              </div>
+              <input id="deltaSlider" type="range" min="4" max="25" step="0.5" value="8.5" oninput="onControlChange()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400" />
+            </div>
+
+            <!-- Memory Subsystem Controls -->
+            <div class="pt-2 border-t border-slate-800 space-y-3">
+              <div class="text-xs font-mono text-slate-400 font-bold uppercase flex items-center justify-between">
+                <span data-i18n="mem_sub_title">HBM3 MEMORY SUBSYSTEM</span>
+                <span id="memSubPts" class="text-cyan-400">0 / 35 max pts</span>
+              </div>
+
+              <!-- Spare rows remaining -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-300" data-i18n="spare_rows_label">Spare Rows Remaining:</span>
+                  <span id="spareValDisplay" class="font-mono font-bold text-slate-200">98%</span>
+                </div>
+                <input id="spareSlider" type="range" min="0" max="100" value="98" oninput="onControlChange()" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400" />
+              </div>
+
+              <!-- Toggles -->
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkEccDbe" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0" />
+                  <span class="text-slate-300">ECC DBE (Xid 48)</span>
+                </label>
+
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkRowRemap" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0" />
+                  <span class="text-slate-300">Row Remap (Xid 63)</span>
+                </label>
+
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkRemapFail" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-rose-500 focus:ring-0" />
+                  <span class="font-semibold text-rose-300">Remap Cap Depleted</span>
+                </label>
+
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkSdcFail" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-rose-500 focus:ring-0" />
+                  <span class="font-semibold text-rose-300">Tensor SDC Fail</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Interconnect and Bus controls -->
+            <div class="pt-2 border-t border-slate-800 space-y-3">
+              <div class="text-xs font-mono text-slate-400 font-bold uppercase flex items-center justify-between">
+                <span data-i18n="interconnect_title">INTERCONNECT & BUS</span>
+                <span id="linkSubPts" class="text-cyan-400">0 / 15 max pts</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkNvlinkCrc" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0" />
+                  <span class="text-slate-300">NVLink CRC Storm</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkLinkDegraded" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0" />
+                  <span class="text-slate-300">PCIe Degraded (x8)</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkBusLost" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-rose-500 focus:ring-0" />
+                  <span class="text-slate-300">Bus Lost (Xid 79)</span>
+                </label>
+                <label class="flex items-center gap-2 p-2 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input id="chkPowerThrottle" type="checkbox" onchange="onControlChange()" class="rounded bg-slate-800 border-slate-700 text-amber-500 focus:ring-0" />
+                  <span class="text-slate-300">Power Rail Throttle</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Health Score Card & Analytic Deep Insights (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-7 space-y-6 shadow-xl relative overflow-hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+              <div>
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1" data-i18n="score_header">
+                  GPU CARD HEALTH SCORE
+                </div>
+                <div class="flex items-baseline gap-3">
+                  <span id="scoreMainVal" class="text-5xl sm:text-6xl font-black text-white tracking-tight">99.4</span>
+                  <span class="text-lg text-slate-400 font-mono">/ 100%</span>
+                </div>
+              </div>
+
+              <!-- Band Badge -->
+              <div class="sm:text-right">
+                <div class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1" data-i18n="band_header">
+                  FLEET TIER BAND
+                </div>
+                <div id="bandBadge" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-sm font-bold font-mono text-emerald-400 bg-emerald-500/10 border-emerald-500/30">
+                  <span>✓ EXCELLENT (&gt;=90)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hard Caps / Verdicts Alert -->
+            <div id="hardCapsBox" class="hidden p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-rose-200 text-xs sm:text-sm space-y-2">
+              <div class="font-bold flex items-center gap-2 text-rose-300 uppercase tracking-wider text-xs font-mono">
+                <span>⚠️</span>
+                <span data-i18n="hard_caps_title">HARD CAPS APPLIED:</span>
+              </div>
+              <ul id="hardCapsList" class="list-disc list-inside space-y-1 text-rose-300/90 text-xs font-mono pl-1"></ul>
+            </div>
+
+            <!-- Deductions Breakdown Table -->
+            <div class="space-y-3">
+              <div class="text-xs font-mono text-slate-400 font-semibold uppercase flex items-center justify-between">
+                <span data-i18n="deductions_header">COMPONENT PENALTY DEDUCTIONS</span>
+                <span id="totalDeductionsLabel">TOTAL DEDUCTIONS: -0.6 PTS</span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+                <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <div class="text-slate-400 flex justify-between">
+                    <span>Memory:</span>
+                    <span>max 35</span>
+                  </div>
+                  <div id="dedMem" class="text-base font-bold mt-1 text-slate-300">-0 pts</div>
+                </div>
+
+                <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <div class="text-slate-400 flex justify-between">
+                    <span>Severe Xid:</span>
+                    <span>max 25</span>
+                  </div>
+                  <div id="dedSev" class="text-base font-bold mt-1 text-slate-300">-0 pts</div>
+                </div>
+
+                <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <div class="text-slate-400 flex justify-between">
+                    <span>Links (NV/PCIe):</span>
+                    <span>max 15</span>
+                  </div>
+                  <div id="dedLinks" class="text-base font-bold mt-1 text-slate-300">-0 pts</div>
+                </div>
+
+                <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <div class="text-slate-400 flex justify-between">
+                    <span>Throttling:</span>
+                    <span>max 10</span>
+                  </div>
+                  <div id="dedThr" class="text-base font-bold mt-1 text-slate-300">-0 pts</div>
+                </div>
+
+                <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <div class="text-slate-400 flex justify-between">
+                    <span>Diagnostics:</span>
+                    <span>max 10</span>
+                  </div>
+                  <div id="dedDiag" class="text-base font-bold mt-1 text-slate-300">-0 pts</div>
+                </div>
+
+                <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+                  <div class="text-slate-400 flex justify-between">
+                    <span>Age (Hours):</span>
+                    <span>max 5</span>
+                  </div>
+                  <div id="dedAge" class="text-base font-bold mt-1 text-cyan-400">-0.6 pts</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Deep Analytics: Predictive Survival Physics Model -->
+            <div class="pt-4 border-t border-slate-800 space-y-3">
+              <div class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider flex items-center justify-between">
+                <span class="flex items-center gap-1.5">
+                  <span>⚡</span>
+                  <span data-i18n="physics_header">PREDICTIVE SURVIVAL PHYSICS (ARRHENIUS & WEIBULL)</span>
+                </span>
+                <span class="text-slate-400">Moon-Stone AI Extended</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-1">
+                  <div class="text-slate-400" data-i18n="af_label">Arrhenius AF (Thermal)</div>
+                  <div class="text-lg font-bold text-white flex items-baseline gap-1">
+                    <span id="afVal">0.43x</span>
+                    <span class="text-[10px] text-slate-400">(vs 75°C base)</span>
+                  </div>
+                  <div id="afStatus" class="text-[11px] text-slate-400">Nominal thermal regime</div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-1">
+                  <div class="text-slate-400" data-i18n="mtbf_label">Predicted MTBF</div>
+                  <div id="mtbfVal" class="text-lg font-bold text-cyan-300">193,142 hrs</div>
+                  <div id="mtbfDays" class="text-[11px] text-slate-400">~8048 operating days</div>
+                </div>
+
+                <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-1">
+                  <div class="text-slate-400" data-i18n="surv_label">30-Day Survival Chance</div>
+                  <div id="survVal" class="text-lg font-bold text-emerald-400">99.6%</div>
+                  <div id="survStatus" class="text-[11px] text-slate-400">Production stable</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cluster SuperPOD Simulation (8 Nodes, 64 GPUs) -->
+      <section id="superpod" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
+              <span>🖧</span>
+              <span data-i18n="cluster_tag">SUPERPOD CLUSTER SIMULATION (64 GPUs · 8 NODES x 8 SXM5)</span>
+            </div>
+            <h3 class="text-xl font-bold text-white tracking-tight" data-i18n="cluster_title">
+              Cluster Fleet Health Heatmap Under Stress
+            </h3>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="addClusterStress()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700">
+              <span class="text-amber-400">⚡</span>
+              <span>+500h Stress</span>
+            </button>
+            <button onclick="resetCluster()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer border border-slate-700">
+              <span class="text-cyan-400">↻</span>
+              <span>Reset / Reseed</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Cluster Stats Summary -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+          <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
+            <span class="text-slate-400">Fleet Mean Score:</span>
+            <div id="clusterMean" class="text-xl font-bold text-white mt-0.5">91.4%</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
+            <span class="text-slate-400">Fleet Median Score:</span>
+            <div id="clusterMedian" class="text-xl font-bold text-cyan-300 mt-0.5">94.8%</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
+            <span class="text-slate-400">Excellent (&gt;=90):</span>
+            <div id="clusterExc" class="text-xl font-bold text-emerald-400 mt-0.5">48 / 64</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950/70 border border-slate-800">
+            <span class="text-slate-400">At Risk (&lt;75):</span>
+            <div id="clusterRisk" class="text-xl font-bold text-rose-400 mt-0.5">5 / 64</div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="text-xs font-mono text-slate-400" data-i18n="cluster_hint">
+            Click any GPU card in the cluster grid to inspect its live telemetry in the analyzer above:
+          </div>
+          <div id="clusterGrid" class="grid grid-cols-4 sm:grid-cols-8 gap-2"></div>
+        </div>
+      </section>
+
+      <!-- Python Codebook & Integration Section -->
+      <section id="python-engine" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">
+              <span>&gt;_</span>
+              <span>INTEGRATION TO GLYPH-FLEET-RCA REPOSITORY</span>
+            </div>
+            <h3 class="text-xl font-bold text-white">Updated Health Analytics Python Script (glyphrca/health.py)</h3>
+          </div>
+
+          <button id="copyPyBtn" onclick="copyPythonCode()" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-900/40 shrink-0">
+            <span>Copy Python Code</span>
+          </button>
+        </div>
+
+        <pre id="pythonCodeBlock" class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 overflow-x-auto max-h-80 leading-relaxed"># GlyphAI Fleet RCA: Predictive GPU Health Engine (v0.2.1 extended)
+# Built from Moon-stone-AI/glyph-fleet-rca/glyphrca/health.py
+# (c) 2026 Vitali de Mille · Sovereign Artificial Mind Telemetry
+
+import math
+from dataclasses import dataclass
+from typing import Dict
+
+@dataclass
+class GpuTelemetryProfile:
+    host: str
+    bdf: str
+    model: str
+    hours: float
+    junction_temp_c: float
+    hotspot_delta_c: float
+    ecc_dbe: int
+    ecc_contained: int
+    sbe_rate_per_hr: float
+    row_remap_events: int
+    spare_rows_pct: float
+    row_remap_fail: bool
+    bus_lost: int
+    nvlink_crc_rate: bool
+    link_degraded: bool
+    thermal_throttle: bool
+    sdc_diag_fail: bool
+
+def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
+    penalties = {"memory": 0.0, "severe_xid": 0.0, "links": 0.0, "throttling": 0.0, "diagnostics": 0.0, "age": 0.0}
+    verdicts = []
+    
+    # 1. Memory (max 35)
+    mem = (g.ecc_contained * 3.0) + (g.ecc_dbe * 8.0) + (g.row_remap_events * 4.0)
+    if g.sbe_rate_per_hr > 1.0: mem += 5.0
+    if g.spare_rows_pct < 20: mem += 15.0
+    penalties["memory"] = min(mem, 35.0)
+    
+    # 2. Severe Xid (max 25)
+    penalties["severe_xid"] = min(g.bus_lost * 8.0, 25.0)
+    
+    # 3. Links (max 15)
+    lnk = (5.0 if g.nvlink_crc_rate else 0.0) + (10.0 if g.link_degraded else 0.0)
+    penalties["links"] = min(lnk, 15.0)
+    
+    # 4. Throttling (max 10)
+    thr = (5.0 if g.thermal_throttle or g.junction_temp_c >= 88 else 0.0)
+    if g.junction_temp_c >= 95: thr += 5.0
+    penalties["throttling"] = min(thr, 10.0)
+    
+    # 5. Diagnostics (max 10)
+    if g.sdc_diag_fail: penalties["diagnostics"] = 10.0
+    
+    # 6. Age (max 5, 1 pt per 8760 h)
+    penalties["age"] = min(round((g.hours / 8760.0), 1), 5.0)
+    
+    score = 100.0 - sum(penalties.values())
+    
+    # Hard Caps
+    if g.row_remap_fail:
+        score = min(score, 10.0)
+        verdicts.append("RMA: row-remapping capacity exhausted")
+    if g.sdc_diag_fail:
+        score = min(score, 10.0)
+        verdicts.append("RMA: failed matrix-math Tensor Core diagnostic")
+    if g.spare_rows_pct <= 0:
+        score = min(score, 30.0)
+        verdicts.append("0% spare rows left in memory banks")
+        
+    # Group Caps (uncorrectable memory incidents)
+    uncorr = g.ecc_dbe + g.row_remap_events
+    if uncorr >= 2:
+        score = min(score, 49.0)
+        verdicts.append("Repeated uncorrectable memory: not for sale")
+    elif uncorr >= 1:
+        score = min(score, 74.0)
+        verdicts.append("Uncorrectable memory error: sell only with disclosure")
+        
+    score = max(0.0, round(score, 1))
+    
+    # Arrhenius physics acceleration: Ea = 0.7 eV
+    T_base, T_j = 348.15, g.junction_temp_c + 273.15
+    arrhenius_af = math.exp((0.7 / 8.61733e-5) * (1.0 / T_base - 1.0 / T_j))
+    hazard = (1.45 / 80000.0) * math.pow(g.hours / 80000.0, 0.45) * max(0.2, arrhenius_af)
+    if g.ecc_dbe > 0: hazard *= 3.5
+    if g.hotspot_delta_c > 14: hazard *= 1.8
+    
+    survival_30d = round(math.exp(-hazard * 720.0) * 100.0, 1)
+    
+    return {
+        "score": score,
+        "band": "excellent" if score >= 90 else "good" if score >= 75 else "caution" if score >= 50 else "do_not_sell",
+        "breakdown": penalties,
+        "arrhenius_af": round(arrhenius_af, 2),
+        "predicted_mtbf_hours": int(1.0 / hazard),
+        "survival_30d_pct": survival_30d,
+        "verdicts": verdicts
+    }</pre>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-6 px-6 text-xs text-slate-500 font-mono">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="font-semibold text-slate-300">GlyphAI</span>
+          <span>·</span>
+          <span>gpu.glyphai.ie</span>
+          <span>·</span>
+          <a href="https://verter.glyphai.ie/" class="text-cyan-400 hover:text-cyan-300">verter.glyphai.ie (Artificial Mind)</a>
+          <span>·</span>
+          <a href="fleet-rca.html" class="hover:text-slate-300">Fleet RCA</a>
+          <span>·</span>
+          <a href="hopper-retirement.html" class="hover:text-slate-300">Hopper Retirement</a>
+        </div>
+        <div>Vitali de Mille (vitali.demille@glyphai.ie) · Form ≠ Content</div>
       </div>
+    </footer>
 
-      <div class="fr-h" id="fr-h">GPUs on this server</div>
-      <div class="fr-grid" id="fr-grid"></div>
+    <script>
+      let currentLang = localStorage.getItem('glyphai_lang') || 'en';
+      let clusterStressHours = 1000;
+      let clusterSeed = 42;
+      let gpu = {
+        host: 'node04.superpod.internal',
+        bdf: '0000:4b:00.0',
+        model: 'H100-SXM5-80GB',
+        hours: 4820,
+        junctionTemp: 64,
+        hotspotDelta: 8.5,
+        sbeRatePerHour: 0.2,
+        eccDbeCount: 0,
+        eccContainedCount: 0,
+        rowRemapEvents: 0,
+        spareRowsRemainingPct: 98,
+        rowRemapFail: false,
+        busLostCount: 0,
+        nvlinkErrors: 0,
+        nvlinkCrcRate: false,
+        pcieReplayRate: false,
+        pcieCorrRuns: 0,
+        linkDegraded: false,
+        powerThrottle: false,
+        thermalThrottle: false,
+        sdcFail: false,
+        memHealthWarn: false,
+        memHealthCrit: false
+      };
 
-      <div class="fr-det" id="fr-det" aria-live="polite"></div>
+      const i18n = {
+        en: {
+          banner_tag: 'GPU HEALTH INDEX & PREDICTIVE TELEMETRY · VERTER V0.2.1',
+          banner_title: 'Deep Analytics & Simulation: GPU Health Score',
+          banner_desc: 'Full analytical implementation of the mathematical GPU health index from <code class="text-cyan-300 font-mono">codebook/health_v0.2.1.yaml</code> &amp; <code class="text-cyan-300 font-mono">glyphrca/health.py</code>. Evaluates HBM3 ECC decay, thermal Arrhenius stress, NVLink degradation, and 30-day survival probability.',
+          inject_label: 'Inject failure vector:',
+          card_telemetry_title: 'Card Telemetry & Parameters',
+          host_label: 'Host / Server',
+          hours_label: 'Hours in Service',
+          temp_label: 'Junction Temperature',
+          delta_label: 'Hotspot Gradient (ΔT)',
+          mem_sub_title: 'HBM3 MEMORY SUBSYSTEM',
+          spare_rows_label: 'Spare Rows Remaining:',
+          interconnect_title: 'INTERCONNECT & BUS',
+          score_header: 'GPU CARD HEALTH SCORE',
+          band_header: 'FLEET TIER BAND',
+          hard_caps_title: 'HARD CAPS APPLIED:',
+          deductions_header: 'COMPONENT PENALTY DEDUCTIONS',
+          physics_header: 'PREDICTIVE SURVIVAL PHYSICS (ARRHENIUS & WEIBULL)',
+          af_label: 'Arrhenius AF (Thermal)',
+          mtbf_label: 'Predicted MTBF',
+          surv_label: '30-Day Survival Chance',
+          cluster_tag: 'SUPERPOD CLUSTER SIMULATION (64 GPUs · 8 NODES x 8 SXM5)',
+          cluster_title: 'Cluster Fleet Health Heatmap Under Stress',
+          cluster_hint: 'Click any GPU card in the cluster grid to inspect its live telemetry in the analyzer above:'
+        },
+        ru: {
+          banner_tag: 'СИСТЕМА ТЕЛЕМЕТРИИ И АНАЛИТИКИ ЗДОРОВЬЯ GPU · VERTER V0.2.1',
+          banner_title: 'Глубокая Аналитика & Симуляция GPU Health Score',
+          banner_desc: 'Реализация математического индекса здоровья из <code class="text-cyan-300 font-mono">codebook/health_v0.2.1.yaml</code> и <code class="text-cyan-300 font-mono">glyphrca/health.py</code>. Оценка деградации памяти HBM3, тепловой усталости (Arrhenius AF), NVLink/PCIe и предиктивный прогноз выживаемости кластера.',
+          inject_label: 'Инъекция сбоев в тестовую карту:',
+          card_telemetry_title: 'Параметры Карты & Телеметрия',
+          host_label: 'Хост / Сервер',
+          hours_label: 'Наработка (часов)',
+          temp_label: 'Температура перехода (Junction Temp)',
+          delta_label: 'Градиент Hotspot (ΔT)',
+          mem_sub_title: 'ПОДСИСТЕМА ПАМЯТИ HBM3 (ECC & REMAP)',
+          spare_rows_label: 'Остаток резервных строк:',
+          interconnect_title: 'ИНТЕРКОННЕКТ & КОРЕНЬ ШИНЫ',
+          score_header: 'ИНДЕКС ЗДОРОВЬЯ КАРТЫ (HEALTH SCORE)',
+          band_header: 'КАТЕГОРИЯ КАРТЫ',
+          hard_caps_title: 'СРАБОТАЛИ ЖЁСТКИЕ ОГРАНИЧЕНИЯ (HARD CAPS):',
+          deductions_header: 'ШТРАФНЫЕ БАЛЛЫ ПО КОМПОНЕНТАМ',
+          physics_header: 'ПРЕДИКТИВНАЯ МОДЕЛЬ ВЫЖИВАЕМОСТИ (ARRHENIUS & WEIBULL)',
+          af_label: 'Фактор Ускорения (Arrhenius AF)',
+          mtbf_label: 'Прогноз MTBF',
+          surv_label: 'Вероятность работы 30 дней',
+          cluster_tag: 'СИМУЛЯЦИЯ КЛАСТЕРА SUPERPOD (64 GPU · 8 НОД ПО 8x SXM5)',
+          cluster_title: 'Карта здоровья кластера при нагрузке',
+          cluster_hint: 'Нажмите на любую карту в кластере, чтобы загрузить ее телеметрию в панель анализатора выше:'
+        }
+      };
 
-      <div class="fr-foot">Synthetic data. Scores are computed in your browser with the rules of
-        <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca/blob/main/codebook/health_v0.2.1.yaml">codebook/health_v0.2.1.yaml</a>.
-        A score describes a GPU's history; it is not a probability that the GPU will survive a given time.</div>
-    </div>
-  </div>
+      function switchLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('glyphai_lang', lang);
+        document.documentElement.lang = lang;
+        const enBtn = document.getElementById('langEnBtn');
+        const ruBtn = document.getElementById('langRuBtn');
+        if (lang === 'ru') {
+          ruBtn.className = 'px-2.5 py-1 rounded transition-colors font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer';
+          enBtn.className = 'px-2.5 py-1 rounded transition-colors text-slate-400 hover:text-slate-200 cursor-pointer';
+        } else {
+          enBtn.className = 'px-2.5 py-1 rounded transition-colors font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer';
+          ruBtn.className = 'px-2.5 py-1 rounded transition-colors text-slate-400 hover:text-slate-200 cursor-pointer';
+        }
+        const dict = i18n[lang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const k = el.getAttribute('data-i18n');
+          if (dict[k]) el.innerHTML = dict[k];
+        });
+        recalculateAndRender();
+        renderCluster();
+      }
 
-  <script>
-  (function () {
-    var root = document.getElementById('fleet-report');
-    if (!root) return;
-    var $ = function (id) { return root.querySelector('#' + id); };
+      function syncControlsFromState() {
+        document.getElementById('tempSlider').value = gpu.junctionTemp;
+        document.getElementById('deltaSlider').value = gpu.hotspotDelta;
+        document.getElementById('spareSlider').value = gpu.spareRowsRemainingPct;
+        document.getElementById('chkEccDbe').checked = gpu.eccDbeCount > 0;
+        document.getElementById('chkRowRemap').checked = gpu.rowRemapEvents > 0;
+        document.getElementById('chkRemapFail').checked = gpu.rowRemapFail;
+        document.getElementById('chkSdcFail').checked = gpu.sdcFail;
+        document.getElementById('chkNvlinkCrc').checked = gpu.nvlinkCrcRate;
+        document.getElementById('chkLinkDegraded').checked = gpu.linkDegraded;
+        document.getElementById('chkBusLost').checked = gpu.busLostCount > 0;
+        document.getElementById('chkPowerThrottle').checked = gpu.powerThrottle;
+      }
 
-    // ---- rules: a subset of codebook/health_v0.2.1.yaml (only the concepts used below)
-    var COMP = { memory: ['GPU memory', 35], severe_xid: ['Severe GPU errors', 25], links: ['NVLink and PCIe', 15],
-                 throttling: ['Power and thermal throttling', 10], diagnostics: ['Active diagnostics', 10], age: ['Age in service', 5] };
-    var RULE = {
-      'GPU.MEM.ECC.DBE':         ['memory', 8, 24], 'GPU.MEM.REMAP.EVENT': ['memory', 4, 16],
-      'GPU.MEM.REMAP.LOW_SPARE': ['memory', 15, 15, 'once'],
-      'GPU.BUS.LOST':            ['severe_xid', 8, 24],
-      'LINK.NVLINK.ERROR':       ['links', 3, 9], 'PCIE.CORR': ['links', 2, 6], 'PCIE.FATAL': ['links', 8, 8],
-      'LINK.DEGRADED':           ['links', 10, 10, 'once'],
-      'POWER.THROTTLE':          ['throttling', 5, 5, 'once'], 'GPU.THERMAL.THROTTLE': ['throttling', 5, 5, 'once'],
-      'GPU.DIAG.FAIL':           ['diagnostics', 10, 10, 'once']
-    };
-    var CAP = { 'GPU.SDC': [10, 'RMA, not for sale: failed matrix-math diagnostic'],
-                'GPU.MEM.REMAP.NO_SPARE': [30, 'Memory banks with no spare rows left'] };
-    var GROUP = ['GPU.MEM.ECC.DBE', 'GPU.MEM.REMAP.EVENT', 'GPU.MEM.REMAP.RECORD_FAIL'];
-    var BANDS = [[90, 'excellent', 'var(--ok)', '#3fbf6a'], [75, 'good', 'var(--good)', '#5b9bd5'],
-                 [50, 'caution', 'var(--warn)', '#e0a33a'], [0, 'do not sell', 'var(--bad)', '#ef6a3a']];
+      function onControlChange() {
+        gpu.junctionTemp = Number(document.getElementById('tempSlider').value);
+        gpu.hotspotDelta = Number(document.getElementById('deltaSlider').value);
+        gpu.spareRowsRemainingPct = Number(document.getElementById('spareSlider').value);
+        gpu.eccDbeCount = document.getElementById('chkEccDbe').checked ? 1 : 0;
+        gpu.rowRemapEvents = document.getElementById('chkRowRemap').checked ? 1 : 0;
+        gpu.rowRemapFail = document.getElementById('chkRemapFail').checked;
+        gpu.sdcFail = document.getElementById('chkSdcFail').checked;
+        gpu.nvlinkCrcRate = document.getElementById('chkNvlinkCrc').checked;
+        gpu.linkDegraded = document.getElementById('chkLinkDegraded').checked;
+        gpu.busLostCount = document.getElementById('chkBusLost').checked ? 1 : 0;
+        gpu.powerThrottle = document.getElementById('chkPowerThrottle').checked;
+        recalculateAndRender();
+      }
 
-    // ---- synthetic fleet: one HGX server, events as they appear in the logs
-    var K = 'kernel.log', S = 'nvidia-smi -q', P = 'pci-sysfs.tsv', D = 'dcgm', G = 'dcgmi diag';
-    var GPUS = [
-      { id: 'GPU-01', m: 'H100', bdf: '0000:1b:00.0', sw: 0, h: 21024, ev: [] },
-      { id: 'GPU-02', m: 'H200', bdf: '0000:43:00.0', sw: 0, h: 16644, ev: [
-        ['LINK.DEGRADED', P, 'cur_width 8 / max_width 16: link trained at x8']] },
-      { id: 'GPU-03', m: 'H100', bdf: '0000:25:00.0', sw: 1, h: 17520, ev: [
-        ['GPU.MEM.ECC.DBE', K, 'NVRM: Xid (PCI:0000:25:00): 48, DBE (double bit error) ECC error'],
-        ['GPU.MEM.REMAP.EVENT', S, 'Remapped Rows: Uncorrectable Error: 1']] },
-      { id: 'GPU-04', m: 'H200', bdf: '0000:61:00.0', sw: 1, h: 13140, ev: [
-        ['POWER.THROTTLE', D, 'clock event reason: HW power brake slowdown'],
-        ['GPU.THERMAL.THROTTLE', D, 'clock event reason: SW thermal slowdown'],
-        ['LINK.NVLINK.ERROR', K, 'NVRM: Xid (PCI:0000:61:00): 74, NVLink error'],
-        ['LINK.NVLINK.ERROR', K, 'NVRM: Xid (PCI:0000:61:00): 74, NVLink error'],
-        ['PCIE.CORR', K, 'pcieport 0000:5f:01.0: AER: Corrected error received: 0000:61:00.0']] },
-      { id: 'GPU-05', m: 'H100', bdf: '0000:9a:00.0', sw: 2, h: 24090, ev: [
-        ['GPU.MEM.REMAP.EVENT', S, 'Remapped Rows: Uncorrectable Error: 3'],
-        ['GPU.MEM.REMAP.EVENT', S, '(second remap)'], ['GPU.MEM.REMAP.EVENT', S, '(third remap)'],
-        ['GPU.MEM.REMAP.LOW_SPARE', S, 'Bank Remap Availability Histogram: Low: 6 bank(s)'],
-        ['GPU.MEM.REMAP.NO_SPARE', S, 'Bank Remap Availability Histogram: None: 2 bank(s)']] },
-      { id: 'GPU-06', m: 'H100', bdf: '0000:ab:00.0', sw: 2, h: 26280, ev: [
-        ['PCIE.CORR', K, 'pcieport 0000:a9:01.0: AER: Corrected error received: 0000:ab:00.0']] },
-      { id: 'GPU-07', m: 'H200', bdf: '0000:c1:00.0', sw: 3, h: 15330, ev: [
-        ['GPU.DIAG.FAIL', G, 'dcgmi diag -r 3: Diagnostic FAIL on GPU 6'],
-        ['GPU.SDC', G, 'matrix-math result mismatch: possible silent data corruption']] },
-      { id: 'GPU-08', m: 'H100', bdf: '0000:d1:00.0', sw: 3, h: 19272, ev: [
-        ['GPU.BUS.LOST', K, 'NVRM: Xid (PCI:0000:d1:00): 79, GPU has fallen off the bus'],
-        ['GPU.BUS.LOST', K, 'NVRM: Xid (PCI:0000:d1:00): 79, GPU has fallen off the bus'],
-        ['GPU.BUS.LOST', K, 'NVRM: Xid (PCI:0000:d1:00): 79, GPU has fallen off the bus'],
-        ['PCIE.FATAL', K, 'pcieport 0000:cf:01.0: AER: Uncorrected (Fatal) error received: 0000:d1:00.0']] }
-    ];
+      function applyPreset(preset) {
+        if (preset === 'healthy') {
+          gpu = {
+            host: 'node04.superpod.internal', bdf: '0000:4b:00.0', model: 'H100-SXM5-80GB', hours: 4820,
+            junctionTemp: 64, hotspotDelta: 8.5, sbeRatePerHour: 0.05, eccDbeCount: 0, eccContainedCount: 0,
+            rowRemapEvents: 0, spareRowsRemainingPct: 98, rowRemapFail: false, busLostCount: 0,
+            nvlinkErrors: 0, nvlinkCrcRate: false, pcieReplayRate: false, pcieCorrRuns: 0,
+            linkDegraded: false, powerThrottle: false, thermalThrottle: false, sdcFail: false,
+            memHealthWarn: false, memHealthCrit: false
+          };
+        } else if (preset === 'thermal') {
+          gpu.junctionTemp = 93;
+          gpu.hotspotDelta = 19.4;
+          gpu.thermalThrottle = true;
+          gpu.powerThrottle = true;
+        } else if (preset === 'remap') {
+          gpu.sbeRatePerHour = 2.8;
+          gpu.rowRemapEvents = 2;
+          gpu.spareRowsRemainingPct = 15;
+          gpu.eccContainedCount = 1;
+          gpu.memHealthWarn = true;
+        } else if (preset === 'interconnect') {
+          gpu.nvlinkErrors = 3;
+          gpu.nvlinkCrcRate = true;
+          gpu.pcieReplayRate = true;
+          gpu.pcieCorrRuns = 3;
+          gpu.linkDegraded = true;
+        } else if (preset === 'dbe_fatal') {
+          gpu.eccDbeCount = 2;
+          gpu.rowRemapEvents = 2;
+          gpu.spareRowsRemainingPct = 0;
+          gpu.rowRemapFail = true;
+          gpu.busLostCount = 1;
+          gpu.memHealthCrit = true;
+        }
+        syncControlsFromState();
+        recalculateAndRender();
+      }
 
-    function score(g) {
-      var lost = {}, count = {}, effect = [], k;
-      for (k in COMP) lost[k] = 0;
-      g.ev.forEach(function (e) {
-        var c = e[0], r = RULE[c]; count[c] = (count[c] || 0) + 1;
-        if (!r) { effect.push(CAP[c] ? 'cap ' + CAP[c][0] + '%' : '–'); return; }
-        var before = lost[r[0]], already = Math.min((count[c] - 1) * r[1], r[2]);
-        var add = r[3] === 'once' ? (count[c] === 1 ? r[1] : 0) : Math.min(count[c] * r[1], r[2]) - already;
-        add = Math.max(0, Math.min(add, COMP[r[0]][1] - before));
-        lost[r[0]] += add; effect.push(add ? '−' + add : '0 (ceiling)');
+      function recalculateAndRender() {
+        const isRu = currentLang === 'ru';
+        const breakdown = { memory: 0, severe_xid: 0, links: 0, throttling: 0, diagnostics: 0, age: 0 };
+        const verdicts = [];
+
+        // 1. Memory (max 35)
+        let memPen = 0;
+        if (gpu.eccContainedCount > 0) memPen += Math.min(gpu.eccContainedCount * 3, 15);
+        if (gpu.eccDbeCount > 0) memPen += Math.min(gpu.eccDbeCount * 8, 24);
+        if (gpu.sbeRatePerHour > 1.0) memPen += 5;
+        if (gpu.rowRemapEvents > 0) memPen += Math.min(gpu.rowRemapEvents * 4, 16);
+        if (gpu.spareRowsRemainingPct < 20) memPen += 15;
+        if (gpu.memHealthWarn) memPen += 5;
+        if (gpu.memHealthCrit) memPen += 15;
+        breakdown.memory = Math.min(memPen, 35);
+
+        // 2. Severe Xid (max 25)
+        let sevPen = 0;
+        if (gpu.busLostCount > 0) sevPen += Math.min(gpu.busLostCount * 8, 24);
+        breakdown.severe_xid = Math.min(sevPen, 25);
+
+        // 3. Links (max 15)
+        let linkPen = 0;
+        if (gpu.nvlinkErrors > 0) linkPen += Math.min(gpu.nvlinkErrors * 3, 9);
+        if (gpu.nvlinkCrcRate) linkPen += 5;
+        if (gpu.pcieReplayRate) linkPen += 5;
+        if (gpu.pcieCorrRuns > 0) linkPen += Math.min(gpu.pcieCorrRuns * 2, 6);
+        if (gpu.linkDegraded) linkPen += 10;
+        breakdown.links = Math.min(linkPen, 15);
+
+        // 4. Throttling (max 10)
+        let thrPen = 0;
+        if (gpu.powerThrottle) thrPen += 5;
+        if (gpu.thermalThrottle || gpu.junctionTemp >= 88) thrPen += 5;
+        if (gpu.junctionTemp >= 95) thrPen += 5;
+        breakdown.throttling = Math.min(thrPen, 10);
+
+        // 5. Diagnostics (max 10)
+        breakdown.diagnostics = gpu.sdcFail ? 10 : 0;
+
+        // 6. Age (max 5)
+        breakdown.age = Math.min(Math.round(((gpu.hours / 8760) * 1.0) * 10) / 10, 5);
+
+        const totalDeductions = Math.round(Object.values(breakdown).reduce((a, b) => a + b, 0) * 10) / 10;
+        let score = Math.max(0, Math.round((100 - totalDeductions) * 10) / 10);
+
+        if (gpu.rowRemapFail) {
+          if (score > 10) score = 10;
+          verdicts.push(isRu ? 'RMA, не для продажи: исчерпана емкость переназначения строк HBM3' : 'RMA, not for sale: row-remapping capacity exhausted');
+        }
+        if (gpu.sdcFail) {
+          if (score > 10) score = 10;
+          verdicts.push(isRu ? 'RMA, не для продажи: сбой теста матричных вычислений Tensor Core (SDC)' : 'RMA, not for sale: failed matrix-math diagnostic (SDC)');
+        }
+        if (gpu.spareRowsRemainingPct === 0) {
+          if (score > 30) score = 30;
+          verdicts.push(isRu ? 'Банки памяти исчерпали запасные строки (0% резерва)' : 'Memory banks with no spare rows left');
+        }
+
+        const uncorrEvents = gpu.eccDbeCount + gpu.rowRemapEvents;
+        if (uncorrEvents >= 2) {
+          if (score > 49) score = 49;
+          verdicts.push(isRu ? 'Повторные неисправимые ошибки памяти (DBE / Row Remap): НЕ ДЛЯ ПРОДАЖИ' : 'Repeated uncorrectable memory errors: not for sale');
+        } else if (uncorrEvents >= 1) {
+          if (score > 74) score = 74;
+          verdicts.push(isRu ? 'Единичная неисправимая ошибка памяти (Xid 48): продажа только с уведомлением' : 'Uncorrectable memory error (Xid 48 or row remap): sell only with disclosure');
+        }
+
+        // Update UI
+        document.getElementById('gpuHostVal').innerText = gpu.host;
+        document.getElementById('gpuBdfVal').innerText = gpu.bdf;
+        document.getElementById('gpuModelBadge').innerText = gpu.model;
+        document.getElementById('gpuHoursVal').innerText = gpu.hours.toLocaleString() + ' h';
+        document.getElementById('gpuYearsVal').innerText = `(${(gpu.hours / 8760).toFixed(1)} ${isRu ? 'г.' : 'yr'})`;
+        document.getElementById('gpuAgePenSub').innerText = `-${breakdown.age} pts ${isRu ? 'за возраст' : 'age pen'}`;
+
+        const tempDisp = document.getElementById('tempValDisplay');
+        tempDisp.innerText = gpu.junctionTemp + '°C';
+        tempDisp.className = 'font-mono font-bold ' + (gpu.junctionTemp >= 88 ? 'text-rose-400' : gpu.junctionTemp >= 78 ? 'text-amber-400' : 'text-emerald-400');
+
+        const deltaDisp = document.getElementById('deltaValDisplay');
+        deltaDisp.innerText = gpu.hotspotDelta + '°C' + (gpu.hotspotDelta > 15 ? ' (TIM pump-out)' : '');
+        deltaDisp.className = 'font-mono font-bold ' + (gpu.hotspotDelta > 15 ? 'text-rose-400' : 'text-slate-200');
+
+        const spareDisp = document.getElementById('spareValDisplay');
+        spareDisp.innerText = gpu.spareRowsRemainingPct + '%';
+        spareDisp.className = 'font-mono font-bold ' + (gpu.spareRowsRemainingPct < 20 ? 'text-rose-400' : 'text-slate-200');
+
+        document.getElementById('memSubPts').innerText = `${breakdown.memory} / 35 max pts`;
+        document.getElementById('linkSubPts').innerText = `${breakdown.links} / 15 max pts`;
+
+        document.getElementById('scoreMainVal').innerText = score.toFixed(1);
+        document.getElementById('totalDeductionsLabel').innerText = `${isRu ? 'Сумма штрафов:' : 'Total Deductions:'} -${totalDeductions} pts`;
+
+        const setDed = (id, val, colorClass) => {
+          const el = document.getElementById(id);
+          el.innerText = `-${val} pts`;
+          el.className = 'text-base font-bold mt-1 ' + (val > 0 ? colorClass : 'text-slate-300');
+        };
+        setDed('dedMem', breakdown.memory, 'text-amber-400');
+        setDed('dedSev', breakdown.severe_xid, 'text-rose-400');
+        setDed('dedLinks', breakdown.links, 'text-amber-400');
+        setDed('dedThr', breakdown.throttling, 'text-amber-400');
+        setDed('dedDiag', breakdown.diagnostics, 'text-rose-400');
+        setDed('dedAge', breakdown.age, 'text-cyan-400');
+
+        const bandBadge = document.getElementById('bandBadge');
+        if (score >= 90) {
+          bandBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-sm font-bold font-mono text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+          bandBadge.innerText = isRu ? '✓ ОТЛИЧНОЕ (EXCELLENT)' : '✓ EXCELLENT (>=90)';
+        } else if (score >= 75) {
+          bandBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-sm font-bold font-mono text-cyan-400 bg-cyan-500/10 border-cyan-500/30';
+          bandBadge.innerText = isRu ? '✓ ХОРОШЕЕ (GOOD)' : '✓ GOOD (75-89)';
+        } else if (score >= 50) {
+          bandBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-sm font-bold font-mono text-amber-400 bg-amber-500/10 border-amber-500/30';
+          bandBadge.innerText = isRu ? '⚠️ ВНИМАНИЕ (CAUTION)' : '⚠️ CAUTION (50-74)';
+        } else {
+          bandBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border text-sm font-bold font-mono text-rose-400 bg-rose-500/10 border-rose-500/30';
+          bandBadge.innerText = isRu ? '⊗ НЕ ДЛЯ ПРОДАЖИ / RMA' : '⊗ DO NOT SELL / RMA (<50)';
+        }
+
+        const hardCapsBox = document.getElementById('hardCapsBox');
+        const hardCapsList = document.getElementById('hardCapsList');
+        if (verdicts.length > 0) {
+          hardCapsBox.classList.remove('hidden');
+          hardCapsList.innerHTML = verdicts.map(v => `<li>${v}</li>`).join('');
+        } else {
+          hardCapsBox.classList.add('hidden');
+        }
+
+        // Arrhenius & Weibull Physics
+        const T_base = 348.15;
+        const T_j_kelvin = gpu.junctionTemp + 273.15;
+        const Ea_over_kB = 0.7 / 8.617333262145e-5;
+        const arrheniusAF = Math.exp(Ea_over_kB * (1 / T_base - 1 / T_j_kelvin));
+        const eta = 80000;
+        const beta = 1.45;
+        const currentHazard = (beta / eta) * Math.pow(gpu.hours / eta, beta - 1) * Math.max(0.2, arrheniusAF);
+        let faultMultiplier = 1.0;
+        if (gpu.eccDbeCount > 0) faultMultiplier *= 3.5;
+        if (gpu.rowRemapEvents > 0) faultMultiplier *= 2.2;
+        if (gpu.spareRowsRemainingPct < 25) faultMultiplier *= 4.0;
+        if (gpu.hotspotDelta > 14) faultMultiplier *= 1.8;
+        if (gpu.nvlinkErrors > 0) faultMultiplier *= 1.5;
+
+        const adjustedHazard = currentHazard * faultMultiplier;
+        const predictedMTBF = Math.max(120, Math.round(1 / adjustedHazard));
+        const survival30DaysPct = Math.min(99.9, Math.max(1.0, Math.round(Math.exp(-adjustedHazard * 720) * 1000) / 10));
+
+        document.getElementById('afVal').innerText = (Math.round(arrheniusAF * 100) / 100) + 'x';
+        document.getElementById('afStatus').innerText = arrheniusAF > 2.0
+          ? (isRu ? 'Высокий термический износ' : 'Accelerated wear-out')
+          : (isRu ? 'Штатный тепловой режим' : 'Nominal thermal regime');
+        document.getElementById('mtbfVal').innerText = predictedMTBF.toLocaleString() + ' hrs';
+        document.getElementById('mtbfDays').innerText = `~${(predictedMTBF / 24).toFixed(0)} ${isRu ? 'дней работы' : 'operating days'}`;
+
+        const survEl = document.getElementById('survVal');
+        survEl.innerText = survival30DaysPct + '%';
+        survEl.className = 'text-lg font-bold ' + (survival30DaysPct > 95 ? 'text-emerald-400' : survival30DaysPct > 80 ? 'text-amber-400' : 'text-rose-400');
+        document.getElementById('survStatus').innerText = survival30DaysPct > 95
+          ? (isRu ? 'Кластер стабилен' : 'Production stable')
+          : (isRu ? 'Риск срыва чекпоинта' : 'Risk to training run');
+      }
+
+      function renderCluster() {
+        const list = [];
+        const models = ['H100-SXM5-80GB', 'H200-SXM5-141GB'];
+        for (let node = 1; node <= 8; node++) {
+          for (let slot = 0; slot < 8; slot++) {
+            const id = `node0${node}-gpu${slot}`;
+            const pseudoRand = (Math.sin(clusterSeed * 100 + node * 8 + slot) + 1) / 2;
+            const hours = 3500 + Math.round(pseudoRand * 3000) + clusterStressHours;
+            const temp = 62 + Math.round(pseudoRand * 26);
+            const hasDbe = pseudoRand > 0.94;
+            const hasRemap = pseudoRand > 0.88;
+            const sparePct = hasRemap ? Math.max(0, Math.round(100 - pseudoRand * 90)) : 100;
+
+            let sc = 100 - (hours / 8760) * 1.0;
+            if (temp > 85) sc -= 10;
+            if (hasRemap) sc -= 8;
+            if (hasDbe) sc = Math.min(sc, 49);
+            if (sparePct === 0) sc = Math.min(sc, 30);
+            sc = Math.max(0, Math.round(sc * 10) / 10);
+
+            let band = 'excellent';
+            if (sc < 50) band = 'do_not_sell';
+            else if (sc < 75) band = 'caution';
+            else if (sc < 90) band = 'good';
+
+            list.push({ id, node: `node0${node}`, slot, model: models[slot % 2], hours, temp, score: sc, band, hasDbe, sparePct });
+          }
+        }
+
+        const scores = list.map(c => c.score);
+        const mean = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10;
+        const sorted = [...scores].sort((a, b) => a - b);
+        const median = sorted[Math.floor(sorted.length / 2)];
+        const exc = list.filter(c => c.band === 'excellent').length;
+        const risk = list.filter(c => c.band === 'caution' || c.band === 'do_not_sell').length;
+
+        document.getElementById('clusterMean').innerText = mean + '%';
+        document.getElementById('clusterMedian').innerText = median + '%';
+        document.getElementById('clusterExc').innerText = `${exc} / 64`;
+        document.getElementById('clusterRisk').innerText = `${risk} / 64`;
+
+        const grid = document.getElementById('clusterGrid');
+        grid.innerHTML = '';
+        list.forEach(c => {
+          let bg = 'bg-emerald-950/40 border-emerald-600/40 text-emerald-300 hover:border-emerald-400';
+          if (c.band === 'good') bg = 'bg-cyan-950/40 border-cyan-600/40 text-cyan-300 hover:border-cyan-400';
+          else if (c.band === 'caution') bg = 'bg-amber-950/40 border-amber-600/40 text-amber-300 hover:border-amber-400';
+          else if (c.band === 'do_not_sell') bg = 'bg-rose-950/50 border-rose-600/50 text-rose-300 hover:border-rose-400 animate-pulse';
+
+          const btn = document.createElement('button');
+          btn.className = `p-2 rounded-xl border text-center transition-all cursor-pointer font-mono text-xs ${bg}`;
+          btn.innerHTML = `
+            <div class="text-[10px] text-slate-400 truncate">${c.node.slice(4)}:g${c.slot}</div>
+            <div class="font-bold text-sm">${c.score}%</div>
+            <div class="text-[10px] text-slate-400">${c.temp}°C</div>
+          `;
+          btn.onclick = () => {
+            gpu.host = `${c.node}.superpod.internal`;
+            gpu.bdf = `0000:0${c.slot + 1}:00.0`;
+            gpu.model = c.model;
+            gpu.hours = c.hours;
+            gpu.junctionTemp = c.temp;
+            gpu.hotspotDelta = 8.0 + (c.temp > 80 ? 8 : 1);
+            gpu.sbeRatePerHour = c.hasDbe ? 2.5 : 0.1;
+            gpu.eccDbeCount = c.hasDbe ? 1 : 0;
+            gpu.eccContainedCount = c.hasDbe ? 1 : 0;
+            gpu.rowRemapEvents = c.sparePct < 100 ? 1 : 0;
+            gpu.spareRowsRemainingPct = c.sparePct;
+            gpu.rowRemapFail = c.sparePct === 0;
+            gpu.thermalThrottle = c.temp >= 88;
+            syncControlsFromState();
+            recalculateAndRender();
+            document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+          };
+          grid.appendChild(btn);
+        });
+      }
+
+      function addClusterStress() {
+        clusterStressHours += 500;
+        renderCluster();
+      }
+
+      function resetCluster() {
+        clusterStressHours = 0;
+        clusterSeed += 1;
+        renderCluster();
+      }
+
+      function copyPythonCode() {
+        const text = document.getElementById('pythonCodeBlock').innerText;
+        navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copyPyBtn');
+        btn.innerText = currentLang === 'ru' ? 'Скопировано!' : 'Copied!';
+        setTimeout(() => {
+          btn.innerText = currentLang === 'ru' ? 'Скопировать Python Код' : 'Copy Python Code';
+        }, 2000);
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        syncControlsFromState();
+        switchLanguage(currentLang);
       });
-      lost.age = Math.min(5, Math.round(g.h / 8760 * 10) / 10);
-      var s = 100; for (k in lost) s -= lost[k];
-      var verdict = '', cap = 100;
-      for (k in CAP) if (count[k] && CAP[k][0] < cap) { cap = CAP[k][0]; verdict = CAP[k][1]; }
-      var gmax = Math.max.apply(null, GROUP.map(function (c) { return count[c] || 0; }));
-      if (gmax >= 2 && 49 < cap) { cap = 49; verdict = 'Repeated uncorrectable memory errors: not for sale'; }
-      else if (gmax === 1 && 74 < cap) { cap = 74; verdict = 'Uncorrectable memory error (Xid 48 or row remap): sell only with disclosure'; }
-      s = Math.round(Math.min(s, cap) * 10) / 10;
-      var b = BANDS.filter(function (x) { return s >= x[0]; })[0];
-      return { s: s, lost: lost, effect: effect, verdict: verdict, band: b };
-    }
-    GPUS.forEach(function (g) { g.r = score(g); });
-
-    // ---- topology
-    var svg = $('fr-svg'), NS = 'http://www.w3.org/2000/svg';
-    function el(n, a, p) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); (p || svg).appendChild(e); return e; }
-    var RC = [380, 30], SWX = [110, 290, 470, 650], SWY = 105, GY = 205, edges = {};
-    var rc = el('g', { class: 'hub' }); el('rect', { x: 320, y: 12, width: 120, height: 34, rx: 7 }, rc);
-    el('text', { x: 380, y: 34, 'text-anchor': 'middle' }, rc).textContent = 'CPU root complex';
-    SWX.forEach(function (x, i) {
-      edges['sw' + i] = el('path', { class: 'edge', d: 'M380 46 C380 75 ' + x + ' 70 ' + x + ' ' + (SWY - 14) });
-      var h = el('g', { class: 'hub' }); el('rect', { x: x - 42, y: SWY - 14, width: 84, height: 28, rx: 6 }, h);
-      el('text', { x: x, y: SWY + 4, 'text-anchor': 'middle' }, h).textContent = 'PCIe SW' + i;
-    });
-    GPUS.forEach(function (g, i) {
-      var x = SWX[g.sw] + (i % 2 ? 45 : -45); g.x = x;
-      edges[g.id] = el('path', { class: 'edge', d: 'M' + SWX[g.sw] + ' ' + (SWY + 14) + ' L' + x + ' ' + (GY - 26) });
-      var n = el('g', { class: 'node', tabindex: 0, role: 'button', 'aria-label': g.id + ' ' + g.m + ', score ' + g.r.s + ' %' });
-      el('circle', { class: 'halo', cx: x, cy: GY, r: 30, stroke: g.r.band[3] }, n);
-      el('circle', { class: 'ring', cx: x, cy: GY, r: 23, stroke: g.r.band[3] }, n);
-      el('text', { class: 'val', x: x, y: GY + 4, 'text-anchor': 'middle' }, n).textContent = g.r.s.toFixed(1);
-      el('text', { x: x, y: GY + 44, 'text-anchor': 'middle' }, n).textContent = g.id.replace('GPU-', 'GPU ');
-      n.addEventListener('click', function () { select(g.id); });
-      n.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(g.id); } });
-      g.node = n;
-    });
-
-    // ---- legend
-    $('fr-legend').innerHTML = BANDS.map(function (b) {
-      var n = GPUS.filter(function (g) { return g.r.band === b; }).length;
-      return '<span><i class="dot" style="background:' + b[2] + '"></i>' + b[1].charAt(0).toUpperCase() + b[1].slice(1) + ' (' + n + ')</span>';
-    }).join('');
-
-    // ---- state
-    var state = { band: 'all', model: 'all', sel: 'GPU-03' };
-    function visible(g) { return (state.band === 'all' || g.r.band[1] === state.band) && (state.model === 'all' || g.m === state.model); }
-
-    function renderList() {
-      var vis = GPUS.filter(visible);
-      $('fr-grid').innerHTML = vis.map(function (g) {
-        return '<button type="button" class="card" data-id="' + g.id + '" aria-pressed="' + (g.id === state.sel) + '">' +
-          '<span class="r1"><i class="dot" style="background:' + g.r.band[2] + '"></i><span class="nm">' + g.id + '</span>' +
-          '<span class="tag">' + g.m + '</span><span class="sc">' + g.r.s.toFixed(1) + ' %</span></span>' +
-          '<span class="r2"><span>' + g.bdf + '</span><span>' + g.r.band[1] + '</span></span>' +
-          '<span class="bar"><i style="width:' + g.r.s + '%;background:' + g.r.band[2] + '"></i></span></button>';
-      }).join('') || '<p style="margin:0;color:var(--muted)">No GPU matches these filters.</p>';
-      $('fr-h').textContent = 'GPUs on this server (' + vis.length + ' of ' + GPUS.length + ')';
-      $('fr-n').textContent = vis.length;
-      $('fr-avg').textContent = vis.length ? (vis.reduce(function (a, g) { return a + g.r.s; }, 0) / vis.length).toFixed(1) + ' %' : '–';
-      GPUS.forEach(function (g) {
-        g.node.classList.toggle('dim', !visible(g));
-        g.node.classList.toggle('sel', g.id === state.sel);
-        edges[g.id].classList.toggle('hot', g.id === state.sel);
-        edges['sw' + g.sw].classList.toggle('hot', GPUS.some(function (x) { return x.id === state.sel && x.sw === g.sw; }));
-      });
-    }
-
-    function renderDetail() {
-      var g = GPUS.filter(function (x) { return x.id === state.sel; })[0], r = g.r;
-      $('fr-selk').textContent = g.id;
-      var comps = Object.keys(COMP).map(function (k) {
-        var lost = r.lost[k], max = COMP[k][1];
-        return '<div class="comp"><span>' + COMP[k][0] + '</span><em>' + (lost ? '−' + lost.toFixed(1) : '0') + ' / ' + max + '</em>' +
-          '<span class="bar"><i style="width:' + (lost / max * 100) + '%;background:' + (lost ? 'var(--bad)' : 'var(--ok)') + '"></i></span></div>';
-      }).join('');
-      var ev = g.ev.length ? g.ev.map(function (e, i) {
-        return '<li><span class="g"><code>' + e[0] + '</code><span class="eff">' + r.effect[i] + '</span></span>' +
-          '<span class="fr-src">' + e[1] + ' · ' + e[2].replace(/</g, '&lt;') + '</span></li>';
-      }).join('') : '<li><span class="fr-src">No error events in the logs. Only age in service is deducted.</span></li>';
-      $('fr-det').innerHTML =
-        '<div class="d-h"><h4>Health card: <span>' + g.id + '</span></h4>' +
-        '<span class="chip" style="background:' + r.band[2] + '">' + r.band[1] + '</span></div>' +
-        '<div class="d-meta"><div><span>PCIe address</span><b>' + g.bdf + '</b></div>' +
-        '<div><span>Model</span><b>' + g.m + '</b></div>' +
-        '<div><span>Hours in service</span><b>' + g.h.toLocaleString('en-US') + '</b></div>' +
-        '<div><span>Health score</span><b>' + r.s.toFixed(1) + ' / 100</b></div></div>' +
-        (r.verdict ? '<div class="verdict" style="border-left-color:' + r.band[2] + '"><b>Cap applied:</b> ' + r.verdict + '</div>' : '') +
-        '<div class="d-cols"><div><h5>Where the points went</h5>' + comps + '</div>' +
-        '<div><h5>Evidence: log line → concept → effect</h5><ul class="ev">' + ev + '</ul></div></div>';
-    }
-
-    function select(id) { state.sel = id; renderList(); renderDetail(); }
-
-    $('fr-grid').addEventListener('click', function (e) { var c = e.target.closest('.card'); if (c) select(c.dataset.id); });
-    $('fr-band').addEventListener('change', function () { state.band = this.value; renderList(); });
-    $('fr-model').addEventListener('click', function (e) {
-      var b = e.target.closest('button'); if (!b) return;
-      state.model = b.dataset.m;
-      this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
-      renderList();
-    });
-    select(state.sel);
-  })();
-  </script>
-</section>
-
-<section id="who">
-  <div class="wrap">
-    <div class="eyebrow">Who it is for</div>
-    <h2>Where a card changes hands</h2>
-    <div class="who">
-      <div><h3>Brokers and marketplaces</h3><p>Both sides of the deal price the same card from the same evidence. Fewer disputes after delivery.</p></div>
-      <div><h3>Buyback and ITAD</h3><p>Grade a fleet before pickup, while its logs still exist. Quote with fewer surprises at intake testing.</p></div>
-      <div><h3>Operators and lenders</h3><p>Know which cards to sell, which to keep, and what collateral is really worth.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="limits">
-  <div class="wrap">
-    <div class="eyebrow">What it is not</div>
-    <h2>Stated limits</h2>
-    <ul class="limits">
-      <li><b>History, not a forecast.</b> The score describes what happened to a card. It is not a probability that the card will survive a given time.</li>
-      <li><b>Tested on synthetic fleets.</b> Real logs differ; each new fleet starts with tuning its vocabulary.</li>
-      <li><b>Starting weights.</b> Set from operations practice and to be calibrated on real failure data.</li>
-      <li><b>No logs, no history.</b> A card whose logs were wiped can only be graded by testing.</li>
-    </ul>
-  </div>
-</section>
-
-<!-- Section: Fleet pricing calculator (vanilla JS, site tokens) -->
-<section id="fleet-calc">
-  <style>
-    #fleet-calc .fc{background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(7,26,61,.08)}
-
-    /* Dark visual panel */
-    #fleet-calc .fc-vis{background:var(--hero);color:var(--hero-ink);padding:32px 40px 18px;display:grid;grid-template-columns:1fr 200px;gap:32px;align-items:stretch}
-    #fleet-calc .fc-rack{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-content:start}
-    #fleet-calc .fc-srv{height:52px;border:1.5px solid rgba(180,196,218,.18);border-radius:8px;background:rgba(255,255,255,.02);
-      display:flex;align-items:flex-start;gap:5px;padding:9px 10px;transition:border-color .25s,background-color .25s}
-    #fleet-calc .fc-srv i{width:6px;height:6px;border-radius:50%;background:rgba(180,196,218,.25);transition:background-color .25s}
-    #fleet-calc .fc-srv.on{border-color:#2F689A;background:rgba(47,104,154,.14)}
-    #fleet-calc .fc-srv.on i:first-child{background:#3fbf6a}
-    #fleet-calc .fc-srv.on i:last-child{background:#33AFA9}
-    #fleet-calc .fc-cap{grid-column:1/-1;font-size:12.5px;color:var(--hero-muted);margin-top:4px}
-
-    #fleet-calc .fc-ringbox{border:1.5px solid #2F689A;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px 12px;text-align:center}
-    #fleet-calc .fc-ringbox small{font-size:12.5px;color:var(--hero-muted)}
-    #fleet-calc .fc-ring{position:relative;width:104px;height:104px}
-    #fleet-calc .fc-ring svg{transform:rotate(-90deg)}
-    #fleet-calc .fc-ring circle{fill:none;stroke-width:9}
-    #fleet-calc .fc-ring .bg{stroke:rgba(180,196,218,.18)}
-    #fleet-calc .fc-ring .fg{stroke:#33AFA9;stroke-linecap:round;transition:stroke-dashoffset .4s ease}
-    #fleet-calc .fc-ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
-    #fleet-calc .fc-pill{white-space:nowrap;font-size:12.5px;font-weight:600;padding:5px 14px;border-radius:999px;background:rgba(255,255,255,.1);color:var(--hero-ink)}
-
-    /* Metrics row */
-    #fleet-calc .fc-kpis{display:grid;grid-template-columns:repeat(3,1fr);background:var(--bg);border-bottom:1px solid var(--line)}
-    #fleet-calc .fc-kpis div{padding:18px 12px;text-align:center}
-    #fleet-calc .fc-kpis span{display:block;font-size:14px;color:var(--muted)}
-    #fleet-calc .fc-kpis b{display:block;margin-top:4px;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:clamp(20px,2.4vw,26px);color:var(--ink)}
-    #fleet-calc .fc-kpis .hl b{color:var(--accent)}
-
-    /* Controls */
-    #fleet-calc .fc-ctl{display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;padding:26px 32px 8px}
-    #fleet-calc .fc-ctl label{display:block;font-weight:600;font-size:15.5px;margin-bottom:12px;color:var(--ink)}
-    #fleet-calc .fc-row{display:flex;align-items:center;gap:14px}
-    #fleet-calc .fc-val{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;white-space:nowrap;min-width:92px;text-align:right}
-    #fleet-calc input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:0;height:6px;border-radius:999px;cursor:pointer;
-      background:linear-gradient(to right,var(--accent) 0,var(--accent) var(--fill,0%),var(--track) var(--fill,0%),var(--track) 100%)}
-    #fleet-calc input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid var(--paper);box-shadow:0 1px 5px rgba(7,26,61,.35)}
-    #fleet-calc input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:3px solid var(--paper)}
-    #fleet-calc input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
-    #fleet-calc select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 15.5px var(--f-body);cursor:pointer}
-    #fleet-calc .fc-hint{font-size:12.5px;color:var(--muted);margin-top:8px;min-height:1.3em}
-
-    /* Included options */
-    #fleet-calc .fc-inc{margin:18px 32px 28px;padding:18px 20px;border-radius:12px;background:var(--bg)}
-    #fleet-calc .fc-inc h3{font-family:var(--f-mono);font-size:12.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
-    #fleet-calc .fc-inc ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:12px 28px}
-    #fleet-calc .fc-inc li{display:flex;align-items:center;gap:8px;font-size:15px}
-    #fleet-calc .fc-inc li::before{content:"✓";flex:none;width:18px;height:18px;border-radius:50%;background:var(--ok);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
-    #fleet-calc .fc-inc a{color:var(--accent);font-weight:600}
-    #fleet-calc .fc-foot{padding:0 32px 22px;font-size:12.5px;color:var(--muted)}
-
-    @media (max-width:900px){
-      #fleet-calc .fc-vis{grid-template-columns:1fr;padding:24px}
-      #fleet-calc .fc-ringbox{flex-direction:row;justify-content:space-between;padding:14px 18px;text-align:left}
-      #fleet-calc .fc-ctl{grid-template-columns:1fr;gap:22px;padding:22px 24px 4px}
-      #fleet-calc .fc-inc{margin:16px 24px 22px}
-      #fleet-calc .fc-foot{padding:0 24px 20px}
-    }
-    @media (max-width:520px){
-      #fleet-calc .fc-rack{grid-template-columns:repeat(4,1fr);gap:8px}
-      #fleet-calc .fc-srv{height:40px}
-      #fleet-calc .fc-ring{width:84px;height:84px}
-      #fleet-calc .fc-ringbox{flex-wrap:wrap;gap:10px}
-      #fleet-calc .fc-ringbox small{flex:1 1 100%}
-      #fleet-calc .fc-kpis div{padding:14px 6px}
-      #fleet-calc .fc-kpis span{font-size:12.5px}
-    }
-  </style>
-
-  <div class="wrap">
-    <div class="eyebrow">Pricing calculator</div>
-    <h2>Price your fleet review</h2>
-    <p>Set the fleet size and how often you want it reviewed. One server holds 8 GPUs; the tier follows the number of servers.</p>
-
-    <div class="fc">
-      <div class="fc-vis">
-        <div class="fc-rack" id="fc-rack" aria-hidden="true"></div>
-        <div class="fc-ringbox">
-          <small>Saving vs on-demand rate</small>
-          <div class="fc-ring">
-            <svg width="100%" height="100%" viewBox="0 0 104 104"><circle class="bg" cx="52" cy="52" r="44"/><circle class="fg" id="fc-arc" cx="52" cy="52" r="44"/></svg>
-            <b id="fc-save">33%</b>
-          </div>
-          <span class="fc-pill" id="fc-pill">High-Volume Fleet</span>
-        </div>
-        <div class="fc-cap" id="fc-cap">Illustration: each tile is 7 servers · priced on 600 GPUs (75 servers)</div>
-      </div>
-
-      <div class="fc-kpis" aria-live="polite">
-        <div><span>Per GPU</span><b id="k-gpu">€22</b></div>
-        <div class="hl"><span>Per review</span><b id="k-run">€13,350</b></div>
-        <div><span>Per year (estimate)</span><b id="k-year">€32,040</b></div>
-      </div>
-
-      <div class="fc-ctl">
-        <div>
-          <label for="fc-gpus">Fleet size, GPUs</label>
-          <div class="fc-row">
-            <input type="range" id="fc-gpus" min="8" max="2000" step="8" value="600">
-            <span class="fc-val" id="fc-gpus-v">600 GPUs</span>
-          </div>
-          <div class="fc-hint" id="fc-gpus-h">75 servers</div>
-        </div>
-        <div>
-          <label for="fc-freq">Review frequency</label>
-          <div class="fc-row">
-            <input type="range" id="fc-freq" min="1" max="12" step="1" value="5">
-            <span class="fc-val" id="fc-freq-v">every 5 mo</span>
-          </div>
-          <div class="fc-hint" id="fc-freq-h">≈ 2.4 reviews per year</div>
-        </div>
-        <div>
-          <label for="fc-tier">Tier</label>
-          <select id="fc-tier">
-            <option value="pilot">Pilot (1 server)</option>
-            <option value="transactional">Transactional Audit (2–24 servers)</option>
-            <option value="volume" selected>High-Volume Fleet (25+ servers)</option>
-            <option value="institutional">Institutional (100+ servers)</option>
-          </select>
-          <div class="fc-hint">Set by fleet size; choosing a tier moves the slider.</div>
-        </div>
-      </div>
-
-      <div class="fc-inc">
-        <h3>Included in this tier</h3>
-        <ul id="fc-inc"></ul>
-      </div>
-      <div class="fc-foot">Estimate only, in euro, excluding VAT. The score describes each GPU's history; it is not a failure forecast. Final price is confirmed in writing before work starts.</div>
-    </div>
-  </div>
-
-  <script>
-  (function () {
-    var root = document.getElementById('fleet-calc');
-    if (!root) return;
-    var $ = function (id) { return root.querySelector('#' + id); };
-    var gpusEl = $('fc-gpus'), freqEl = $('fc-freq'), tierEl = $('fc-tier'), rack = $('fc-rack');
-    var TILES = 24, GPN = 8, BASE = 267, CIRC = 2 * Math.PI * 44;
-
-    var TIERS = {
-      pilot: { name: 'Pilot', rate: 0, minNodes: 1,
-        inc: ['Health card for every GPU', 'Server summary', 'Vocabulary checked by hand'] },
-      transactional: { name: 'Transactional Audit', rate: 267, minNodes: 2,
-        inc: ['Health card for every GPU', 'BMC, kernel and DCGM logs combined', 'Fleet summary'] },
-      volume: { name: 'High-Volume Fleet', rate: 178, minNodes: 25,
-        inc: ['Everything in Transactional', 'Batch intake', 'Vocabulary tuned to your hardware', 'Masking checked on every batch'] },
-      institutional: { name: 'Institutional', rate: 178, minNodes: 100,
-        inc: ['Everything in High-Volume Fleet', 'Degradation trends across reviews',
-              'Collateral valuation at 0.1% of fleet value — <a href="mailto:vitali.demille@glyphai.ie?subject=Institutional%20review">email for a quote</a>'] }
-    };
-
-    for (var i = 0; i < TILES; i++) {
-      var d = document.createElement('div'); d.className = 'fc-srv'; d.innerHTML = '<i></i><i></i>'; rack.appendChild(d);
-    }
-    var tiles = rack.children;
-    $('fc-arc').setAttribute('stroke-dasharray', CIRC);
-
-    var usd = function (n) { return '€' + Math.round(n).toLocaleString('en-IE'); };
-    var fill = function (el) { el.style.setProperty('--fill', ((el.value - el.min) / (el.max - el.min) * 100) + '%'); };
-    function tierFor(nodes) {
-      if (nodes <= 1) return 'pilot';
-      if (nodes < 25) return 'transactional';
-      if (nodes < 100) return 'volume';
-      return 'institutional';
-    }
-
-    function render() {
-      var gpus = +gpusEl.value, months = +freqEl.value;
-      var nodes = Math.ceil(gpus / GPN), key = tierFor(nodes), t = TIERS[key];
-      var perYear = 12 / months, run = nodes * t.rate;
-
-      $('fc-gpus-v').textContent = gpus.toLocaleString('en-US') + ' GPUs';
-      $('fc-gpus-h').textContent = nodes + (nodes === 1 ? ' server' : ' servers');
-      $('fc-freq-v').textContent = months === 1 ? 'monthly' : 'every ' + months + ' mo';
-      $('fc-freq-h').textContent = '≈ ' + (Math.round(perYear * 10) / 10) + ' reviews per year';
-      tierEl.value = key;
-
-      $('k-gpu').textContent = key === 'pilot' ? '€0' : usd(t.rate / GPN);
-      $('k-run').textContent = usd(run);
-      $('k-year').textContent = key === 'pilot' ? 'One-off' : usd(run * perYear);
-
-      var save = t.rate ? Math.round((1 - t.rate / BASE) * 100) : 100;
-      $('fc-save').textContent = key === 'pilot' ? 'Free' : save + '%';
-      $('fc-arc').setAttribute('stroke-dashoffset', CIRC * (1 - save / 100));
-      $('fc-pill').textContent = t.name;
-
-      var per = Math.max(1, Math.ceil(nodes / TILES)), lit = Math.min(TILES, Math.ceil(nodes / per));
-      for (var i = 0; i < TILES; i++) tiles[i].classList.toggle('on', i < lit);
-      $('fc-cap').textContent = 'Illustration: each tile is ' + per + (per === 1 ? ' server' : ' servers') +
-        ' · priced on ' + gpus.toLocaleString('en-US') + ' GPUs (' + nodes + (nodes === 1 ? ' server)' : ' servers)');
-
-      $('fc-inc').innerHTML = t.inc.map(function (x) { return '<li>' + x + '</li>'; }).join('');
-      fill(gpusEl); fill(freqEl);
-    }
-
-    gpusEl.addEventListener('input', render);
-    freqEl.addEventListener('input', render);
-    tierEl.addEventListener('change', function () {
-      var nodes = Math.ceil(+gpusEl.value / GPN), t = TIERS[tierEl.value];
-      var target = tierEl.value === 'pilot' ? 1 : tierEl.value === 'transactional' ? Math.min(Math.max(nodes, 2), 24)
-                 : tierEl.value === 'volume' ? Math.min(Math.max(nodes, 25), 99) : Math.max(nodes, t.minNodes);
-      gpusEl.value = target * GPN;
-      render();
-    });
-    render();
-  })();
-  </script>
-</section>
-
-<!-- Section: Security & Compliance FAQ -->
-<section id="security">
-  <style>
-    #security .sf-lead{max-width:44em}
-    #security .sf-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 28px;padding:0;list-style:none}
-    #security .sf-facts li{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:14.5px;color:var(--muted)}
-    #security .sf-facts b{display:block;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin-bottom:4px;font-weight:500}
-    #security .sf-list{border:1px solid var(--line);border-radius:12px;background:var(--paper);overflow:hidden}
-    #security details{border-bottom:1px solid var(--line)}
-    #security details:last-child{border-bottom:0}
-    #security summary{list-style:none;cursor:pointer;padding:18px 56px 18px 22px;position:relative;font-weight:600;font-size:16.5px;color:var(--ink)}
-    #security summary::-webkit-details-marker{display:none}
-    #security summary::after{content:"+";position:absolute;right:22px;top:50%;transform:translateY(-50%);font-family:var(--f-mono);font-size:22px;color:var(--accent);transition:transform .2s}
-    #security details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
-    #security summary:hover{background:var(--bg)}
-    #security summary:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
-    #security .sf-a{padding:0 22px 20px;color:var(--muted);font-size:15.5px}
-    #security .sf-a p{margin:0 0 10px}
-    #security .sf-a p:last-child{margin-bottom:0}
-    #security .sf-a ul,#security .sf-a ol{margin:0 0 10px;padding-left:20px}
-    #security .sf-a li{margin-bottom:4px}
-    #security .sf-a b{color:var(--ink)}
-    #security .sf-a code{font-family:var(--f-mono);font-size:.92em;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 4px}
-    #security .sf-a a{color:var(--accent)}
-    #security .sf-note{border-left:3px solid var(--warn);padding:8px 12px;background:var(--bg);border-radius:0 6px 6px 0}
-    @media (max-width:900px){#security .sf-facts{grid-template-columns:1fr 1fr}}
-    @media (max-width:520px){#security .sf-facts{grid-template-columns:1fr}#security summary{padding:16px 48px 16px 16px;font-size:15.5px}#security .sf-a{padding:0 16px 18px}}
-  </style>
-
-  <div class="wrap">
-    <div class="eyebrow">Security &amp; compliance</div>
-    <h2>Built around data minimisation</h2>
-    <p class="sf-lead">The GlyphAI collection process is designed to give your security team full control: the collector is open source, read-only by default, makes no network connections, and masks identifying data before an archive is created. Nothing leaves your environment until you review and send it.</p>
-
-    <ul class="sf-facts">
-      <li><b>Read-only</b>Installs nothing, changes no configuration</li>
-      <li><b>No network</b>No connections, no open ports</li>
-      <li><b>Masked by default</b>Hostnames, IPv4/IPv6, MACs, serial numbers</li>
-      <li><b>Open source</b>Auditable before execution</li>
-    </ul>
-
-    <div class="sf-list">
-      <details open>
-        <summary>Is the collector safe to run on production or decommissioned servers?</summary>
-        <div class="sf-a">
-          <p>Yes, in its default mode. The collector only reads existing diagnostic data:</p>
-          <ul>
-            <li>the kernel log (<code>journalctl -k</code>, or <code>dmesg</code> as a fallback);</li>
-            <li>the BMC system event log through <code>ipmitool sel elist</code>;</li>
-            <li>GPU state through <code>nvidia-smi -q</code>, PCIe link state from <code>/sys/bus/pci</code>, and DCGM GPU discovery.</li>
-          </ul>
-          <p>It installs no software, changes no hardware or system configuration and starts no services. Its only disk writes are a temporary working directory, removed on exit, and a single <code>.tar.gz</code> archive in the directory where it is run. Root privileges are recommended so that the kernel and BMC logs can be read in full.</p>
-          <p class="sf-note"><b>Exception:</b> the optional <code>--diag</code> flag runs NVIDIA DCGM active diagnostics, which place load on every GPU. It is off by default and should be used only on idle, drained nodes.</p>
-        </div>
-      </details>
-
-      <details>
-        <summary>Can our security team review the collector before it is executed?</summary>
-        <div class="sf-a">
-          <p>Yes. The collector is a single shell script of about 160 lines with no compiled components. The full source is published at <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca/blob/main/tools/glyph-collect.sh">github.com/Moon-stone-AI/glyph-fleet-rca</a>, and each command it runs is listed in its header.</p>
-        </div>
-      </details>
-
-      <details>
-        <summary>Which identifiers are masked, and which are retained?</summary>
-        <div class="sf-a">
-          <p>Masking is enabled by default and is applied on the server before the archive is created:</p>
-          <ul>
-            <li><b>Hostname</b> is replaced with <code>node-&lt;hash&gt;</code>, derived from a one-way SHA-256 hash;</li>
-            <li><b>IPv4, IPv6 and MAC addresses</b> are masked;</li>
-            <li><b>Serial numbers</b>, <b>board part numbers</b> and <b>Dell service tags</b> are replaced with <code>REDACTED</code>.</li>
-          </ul>
-          <p>Masking applies to every text file in the archive, including vendor BMC exports (iDRAC, XCC, iLO) supplied through the <code>--bmc</code> option. Original export files are copied, never modified.</p>
-          <p><b>Retained by design:</b> GPU UUIDs and PCIe addresses, because they link a health history to the physical card being bought or sold.</p>
-          <p class="sf-note"><b>Your review is recommended for:</b> files added to the archive by hand after it is built, which are not masked, and serial numbers held in unlabelled CSV columns, which are not recognised automatically. Masking can be disabled with <code>--no-redact</code>; we do not recommend it.</p>
-        </div>
-      </details>
-
-      <details>
-        <summary>Does the process require network access, firewall changes or open ports?</summary>
-        <div class="sf-a">
-          <p>No. The collector makes no network connections, inbound or outbound, opens no ports and requires no change to firewall rules or host security configuration. The archive is transferred by you, through a channel your organisation approves.</p>
-        </div>
-      </details>
-
-      <details>
-        <summary>How is the archive handled after it is delivered?</summary>
-        <div class="sf-a">
-          <ol>
-            <li><b>Review.</b> You inspect the archive locally before release (<code>tar -tzf</code> lists its contents).</li>
-            <li><b>Processing.</b> Analysis runs offline on a copy of the archive using GlyphAI's own software. Logs are not passed to third-party services.</li>
-            <li><b>Purpose limitation.</b> Logs are used solely to produce your report.</li>
-            <li><b>Disposal.</b> Source logs are deleted within 30 days of report delivery, or earlier on request. Written confirmation of deletion is available on request.</li>
-          </ol>
-        </div>
-      </details>
-
-      <details>
-        <summary>Can the logs contain personal data, and how is GDPR addressed?</summary>
-        <div class="sf-a">
-          <p>Infrastructure logs rarely contain personal data, but kernel logs can include user or process names. GlyphAI is based in Ireland and processes logs in the EU. Where your logs may contain personal data, a data processing agreement can be put in place before any transfer.</p>
-        </div>
-      </details>
-
-      <details>
-        <summary>Does GlyphAI hold SOC 2 or ISO 27001 certification?</summary>
-        <div class="sf-a">
-          <p>Not at present. We support your vendor security review with the public source code of the collector, this documentation, and a written data-handling agreement. Contact <a href="mailto:vitali.demille@glyphai.ie?subject=Security%20review">vitali.demille@glyphai.ie</a> to request a security questionnaire response.</p>
-        </div>
-      </details>
-    </div>
-  </div>
-</section>
-
-<section id="pilot">
-  <div class="wrap">
-    <div class="pilot">
-      <div>
-        <div class="eyebrow">Free pilot</div>
-        <h2>One fleet, one report, no cost</h2>
-        <p>Send logs from a batch you are buying, selling or decommissioning. You get a health card for every GPU and the fleet summary. Run one read-only script per server; its archive masks hostnames, addresses and serial numbers by default, and you look inside before sending. Logs stay confidential and are used only for your report.</p>
-      </div>
-      <div>
-        <div class="email">
-          <code id="addr">vitali.demille@glyphai.ie</code>
-          <button class="cta" id="copy" type="button">Copy address</button>
-        </div>
-        <div id="copy-note" aria-live="polite"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="wrap">
-  <footer>
-    <div><a href="https://www.glyphai.ie">glyphai.ie</a> · Vitali de Mille · 20+ years in mission-critical and hyperscale data centres</div>
-    <nav aria-label="Links">
-      <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca">GitHub</a>
-      <a href="https://zenodo.org/records/20813531">GlyphAI monograph</a>
-      <a href="https://github.com/Moon-stone-AI/glyphai-public">About GlyphAI</a>
-    </nav>
-  </footer>
-</div>
-
-<script>
-document.getElementById('copy').addEventListener('click', function () {
-  var note = document.getElementById('copy-note');
-  var text = document.getElementById('addr').textContent;
-  function selectIt() {
-    var r = document.createRange(); r.selectNodeContents(document.getElementById('addr'));
-    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-    note.textContent = 'Address selected. Press Ctrl+C or ⌘C to copy.';
-  }
-  try {
-    navigator.clipboard.writeText(text).then(function () { note.textContent = 'Copied.'; }, selectIt);
-  } catch (e) { selectIt(); }
-});
-</script>
-</body>
+    </script>
+  </body>
 </html>
