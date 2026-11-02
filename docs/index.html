@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="light scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,6 +38,29 @@
  */
 
 :root,
+html.light {
+  /* --- Light Theme: Cleanroom Silicon Blueprint (Default) --- */
+  --bg-monolith: #F8FAFC;       /* Cleanroom pearl-slate base */
+  --bg-surface: #FFFFFF;        /* Pristine cards and telemetry panels */
+  --bg-surface-elevated: #F1F5F9; /* Subtle elevated surfaces */
+  --border-utility: #CBD5E1;    /* Crisp 1px division lines */
+
+  /* Text & Semantic Content */
+  --text-primary: #0F172A;      /* Deep midnight slate for high legibility */
+  --text-muted: #475569;        /* Technical slate gray for scaffolding */
+
+  /* Functional Accents (Calibrated for white background contrast) */
+  --accent-coolant: #007799;    /* Deep Coolant Sky (WCAG AA 4.5:1 on white) */
+  --accent-amber: #C26200;      /* Terminal Amber for light mode */
+  --accent-vault: #6941C6;      /* Deep Vault Purple */
+
+  /* Micro-Typography */
+  --font-data: "JetBrains Mono", "SF Mono", monospace;
+  --font-editorial: "Inter", -apple-system, sans-serif;
+
+  color-scheme: light;
+}
+
 html.dark {
   /* --- Dark Theme: Deep Server-Room Obsidian Base --- */
   --bg-monolith: #0B0D11;       /* Deep server-room obsidian base */
@@ -61,62 +84,213 @@ html.dark {
   color-scheme: dark;
 }
 
-html.light {
-  /* --- Light Theme: Cleanroom Silicon Blueprint --- */
-  --bg-monolith: #F8FAFC;       /* Cleanroom pearl-slate base */
-  --bg-surface: #FFFFFF;        /* Pristine cards and telemetry panels */
-  --bg-surface-elevated: #F1F5F9; /* Subtle elevated surfaces */
-  --border-utility: #CBD5E1;    /* Crisp 1px division lines */
-
-  /* Text & Semantic Content */
-  --text-primary: #0F172A;      /* Deep midnight slate for high legibility */
-  --text-muted: #475569;        /* Technical slate gray for scaffolding */
-
-  /* Functional Accents (Calibrated for white background contrast) */
-  --accent-coolant: #007799;    /* Deep Coolant Sky (WCAG AA 4.5:1 on white) */
-  --accent-amber: #C26200;      /* Terminal Amber for light mode */
-  --accent-vault: #6941C6;      /* Deep Vault Purple */
-
-  /* Micro-Typography */
-  --font-data: "JetBrains Mono", "SF Mono", monospace;
-  --font-editorial: "Inter", -apple-system, sans-serif;
-
-  color-scheme: light;
+/* --- High-Contrast Light Mode Architecture --- */
+html.light body {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
-/* Light Mode Overrides for Core UI Elements */
-html.light .bg-slate-950 { background-color: var(--bg-monolith) !important; }
-html.light .bg-slate-900 { background-color: var(--bg-surface) !important; }
-html.light .bg-slate-900\/40,
-html.light .bg-slate-900\/60,
-html.light .bg-slate-900\/80,
-html.light .bg-slate-900\/90 { background-color: var(--bg-surface) !important; }
-html.light .bg-slate-950\/60,
-html.light .bg-slate-950\/80 { background-color: var(--bg-surface-elevated) !important; }
+/* Gradients: convert dark obsidian gradients to crisp cleanroom pearl surfaces */
+html.light [class*="bg-gradient-to-"],
+html.light .bg-gradient-to-r,
+html.light .bg-gradient-to-br,
+html.light .bg-gradient-to-b,
+html.light .bg-gradient-to-tr {
+  background-image: none !important;
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* All dark slate backgrounds converted to layered cleanroom surfaces */
+html.light .bg-slate-950,
+html.light .bg-slate-900,
+html.light [class*="bg-slate-950/"],
+html.light [class*="bg-slate-900/"] {
+  background-color: #FFFFFF !important;
+}
+
+html.light .bg-slate-800,
+html.light [class*="bg-slate-800/"],
+html.light .bg-slate-700,
+html.light [class*="bg-slate-700/"] {
+  background-color: #F1F5F9 !important;
+}
+
+/* Borders */
+html.light .border-slate-900,
 html.light .border-slate-800,
-html.light .border-slate-800\/60,
-html.light .border-slate-800\/80,
-html.light .border-slate-700 { border-color: var(--border-utility) !important; }
-html.light .text-white,
-html.light .text-slate-100 { color: var(--text-primary) !important; }
-html.light .text-slate-200,
-html.light .text-slate-300 { color: #1E293B !important; }
-html.light .text-slate-400,
-html.light .text-slate-500 { color: var(--text-muted) !important; }
-html.light .hover\:bg-slate-800:hover,
-html.light .hover\:bg-slate-900:hover { background-color: #E2E8F0 !important; }
-
-html.light .panel-box,
-html.light .kpi-card,
-html.light .node-meta-card {
-  background: var(--bg-surface);
-  border-color: var(--border-utility);
+html.light [class*="border-slate-800/"],
+html.light .border-slate-700,
+html.light [class*="border-slate-700/"],
+html.light .border-slate-600 {
+  border-color: #CBD5E1 !important;
 }
 
+/* Shadows in light mode */
+html.light .shadow-2xl,
+html.light .shadow-xl {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* High-Contrast Core Text Hierarchy */
+html.light .text-white,
+html.light .text-slate-100 {
+  color: #0F172A !important;
+}
+
+html.light .text-slate-200,
+html.light .text-slate-300 {
+  color: #1E293B !important;
+}
+
+html.light .text-slate-400 {
+  color: #475569 !important;
+}
+
+html.light .text-slate-500 {
+  color: #64748B !important;
+}
+
+/* Functional Accents: WCAG AAA/AA Calibrated for White Background */
+html.light .text-emerald-400,
+html.light .text-emerald-300,
+html.light .text-emerald-200 {
+  color: #047857 !important; /* Deep forest emerald */
+}
+
+html.light .text-cyan-400,
+html.light .text-cyan-300,
+html.light .text-cyan-200 {
+  color: #0284C7 !important; /* Deep sky cyan */
+}
+
+html.light .text-purple-400,
+html.light .text-purple-300,
+html.light .text-purple-200 {
+  color: #6D28D9 !important; /* Deep royal purple */
+}
+
+html.light .text-amber-400,
+html.light .text-amber-300 {
+  color: #B45309 !important; /* Deep amber bronze */
+}
+
+html.light .text-rose-400,
+html.light .text-rose-300 {
+  color: #DC2626 !important; /* Deep crimson */
+}
+
+/* Badges & Accent Pill Backgrounds in Light Theme */
+html.light [class*="bg-emerald-950"],
+html.light .bg-emerald-500\/10,
+html.light .bg-emerald-500\/20 {
+  background-color: #ECFDF5 !important;
+  border-color: #A7F3D0 !important;
+  color: #065F46 !important;
+}
+
+html.light [class*="bg-cyan-950"],
+html.light .bg-cyan-500\/10,
+html.light .bg-cyan-500\/20 {
+  background-color: #F0F9FF !important;
+  border-color: #BAE6FD !important;
+  color: #0369A1 !important;
+}
+
+html.light [class*="bg-purple-950"],
+html.light .bg-purple-500\/10,
+html.light .bg-purple-500\/20 {
+  background-color: #FAF5FF !important;
+  border-color: #E9D5FF !important;
+  color: #6D28D9 !important;
+}
+
+html.light [class*="bg-amber-950"],
+html.light .bg-amber-500\/10,
+html.light .bg-amber-500\/20 {
+  background-color: #FFFBEB !important;
+  border-color: #FDE68A !important;
+  color: #92400E !important;
+}
+
+html.light [class*="bg-rose-950"],
+html.light .bg-rose-500\/10,
+html.light .bg-rose-500\/20 {
+  background-color: #FEF2F2 !important;
+  border-color: #FECACA !important;
+  color: #991B1B !important;
+}
+
+/* Secondary Button (GitHub button, etc.) */
+html.light a.bg-slate-800,
+html.light button.bg-slate-800 {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+html.light a.bg-slate-800:hover,
+html.light button.bg-slate-800:hover {
+  background-color: #F1F5F9 !important;
+  border-color: #94A3B8 !important;
+}
+
+/* Interactive failure vector buttons */
+html.light .hover\:bg-slate-700\/80:hover,
+html.light .hover\:bg-slate-700:hover {
+  background-color: #E2E8F0 !important;
+}
+
+/* Table header & alternating rows in Light Theme */
+html.light thead tr {
+  background-color: #F1F5F9 !important;
+  border-bottom: 2px solid #CBD5E1 !important;
+}
+html.light thead th {
+  color: #0F172A !important;
+}
+html.light tbody tr:hover {
+  background-color: #F8FAFC !important;
+}
+html.light tbody tr.bg-slate-800\/10 {
+  background-color: #F8FAFC !important;
+}
+
+/* Dark code terminal block: preserve deep obsidian with crisp light text */
+html.light #pythonCodeBlock,
+html.light pre.bg-slate-950,
 html.light .diagnostic-terminal,
 html.light .analysis-core-terminal {
-  background-color: #0B0D11;
-  color: #FFFFFF;
+  background-color: #0B0D11 !important;
+  color: #E2E8F0 !important;
+  border-color: #1E293B !important;
+}
+
+html.light #pythonCodeBlock *,
+html.light pre.bg-slate-950 * {
+  color: #CBD5E1 !important;
+}
+html.light #pythonCodeBlock .text-cyan-400,
+html.light pre.bg-slate-950 .text-cyan-400 {
+  color: #38BDF8 !important;
+}
+
+/* Sliders */
+html.light input[type="range"] {
+  background-color: #CBD5E1 !important;
+}
+
+/* Footer in Light Theme */
+html.light footer.bg-slate-950 {
+  background-color: #F1F5F9 !important;
+  border-top-color: #CBD5E1 !important;
+  color: #475569 !important;
+}
+html.light footer a {
+  color: #0284C7 !important;
+}
+html.light footer a:hover {
+  color: #0369A1 !important;
 }
 
 /* Base Body Application */
@@ -302,9 +476,9 @@ body {
         <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank">[ Repository ]</a>
       </nav>
       <div class="flex items-center gap-2.5 shrink-0">
-        <button id="themeToggleBtn" onclick="toggleTheme()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--border-utility)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] transition-all cursor-pointer font-mono text-xs shadow-sm" title="Toggle Light / Dark theme">
-          <span id="themeIcon">☀️</span>
-          <span id="themeLabel" class="hidden sm:inline text-[11px] font-medium text-[var(--text-muted)]">Light</span>
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--border-utility)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] transition-all cursor-pointer font-mono text-xs shadow-sm" title="Switch to Dark theme">
+          <span id="themeIcon">🌙</span>
+          <span id="themeLabel" class="hidden sm:inline text-[11px] font-medium text-[var(--text-muted)]">Dark</span>
         </button>
         <div class="flex items-center rounded-lg bg-slate-900 border border-slate-800 p-0.5 text-xs font-mono">
           <button id="langEnBtn" onclick="switchLanguage('en')" class="px-2.5 py-1 rounded transition-colors font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer">EN</button>
@@ -1100,7 +1274,7 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
 
     <script>
       
-      let currentTheme = localStorage.getItem('glyphai_theme') || 'dark';
+      let currentTheme = localStorage.getItem('glyphai_theme') || 'light';
 
       function applyTheme(theme) {
         currentTheme = theme;
