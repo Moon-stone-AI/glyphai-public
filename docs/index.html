@@ -804,85 +804,86 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
           <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 shadow-xl">
             <div class="text-center max-w-3xl mx-auto space-y-4">
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-medium border border-emerald-500/20">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Zero-Trust Telemetry Engine
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span data-i18n="hero_pill">Zero-Trust Telemetry Engine</span>
               </div>
-              <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
-                Архитектурная необратимость для аппаратных активов.
+              <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-white" data-i18n="hero_title">
+                Architectural Irreversibility for Hardware Assets.
               </h2>
-              <p class="text-base sm:text-lg text-slate-300 leading-relaxed">
-                Сырые логи GPU — это лингвистический шум. GlyphAI транслирует вендорские диалекты (NVIDIA Xid, IPMI SEL, DCGM) в единый семантический словарь. Каждое событие становится квантифицируемым концептом. Health Score — это детерминированная сумма этих концептов, а не вероятностная догадка.
+              <p class="text-base sm:text-lg text-slate-300 leading-relaxed" data-i18n="hero_desc">
+                Raw GPU logs are linguistic noise. GlyphAI translates vendor dialects (NVIDIA Xid, IPMI SEL, DCGM) into a single semantic vocabulary. Each event becomes a quantifiable concept. Health Score is the deterministic sum of these concepts, not a probabilistic guess.
               </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 border-t border-slate-700/50 pt-8 text-center">
               <div class="p-4 space-y-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
-                <div class="text-xl font-bold text-white">Read-Only Выполнение</div>
-                <div class="text-sm text-slate-400">Никаких постоянных фоновых процессов и инсталляций. Коллектор выполняется строго по требованию в вашей среде.</div>
+                <div class="text-xl font-bold text-white" data-i18n="card1_title">Read-Only Execution</div>
+                <div class="text-sm text-slate-400" data-i18n="card1_desc">No installation or continuous background processes required. Runs entirely on demand within your perimeter.</div>
               </div>
               <div class="p-4 space-y-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
-                <div class="text-xl font-bold text-white">Air-Gapped Приватность</div>
-                <div class="text-sm text-slate-400">Ноль исходящего сетевого трафика. Отсутствуют любые внешние диагностические соединения.</div>
+                <div class="text-xl font-bold text-white" data-i18n="card2_title">Air-Gapped Privacy</div>
+                <div class="text-sm text-slate-400" data-i18n="card2_desc">No outbound network traffic generated. Zero diagnostic connections back to external nodes.</div>
               </div>
               <div class="p-4 space-y-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
-                <div class="text-xl font-bold text-white">Маскирование по умолчанию</div>
-                <div class="text-sm text-slate-400">Хеширование hostname, удаление IPv4/IPv6/MAC и редакция серийных номеров до создания архива.</div>
+                <div class="text-xl font-bold text-white" data-i18n="card3_title">Masked by Default</div>
+                <div class="text-sm text-slate-400" data-i18n="card3_desc">Hostname hashing, IPv4/IPv6/MAC removal, and hardware serial redaction applied locally before archive generation.</div>
               </div>
             </div>
             
             <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
               <a href="mailto:vitali.demille@glyphai.ie?subject=Request%20Free%20Pilot%20GPU%20Health%20Audit" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono transition-all shadow-md cursor-pointer">
-                <span>Запустить бесплатный пилот</span>
+                <span data-i18n="hero_cta_btn">Launch Free Pilot</span>
                 <span>→</span>
               </a>
               <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-mono text-emerald-400 hover:text-emerald-300 transition-colors">
-                <span>Открыть код коллектора на GitHub ↗</span>
+                <span data-i18n="hero_gh_btn">Open Collector Code on GitHub ↗</span>
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
               </a>
             </div>
           </div>
 
-          <!-- 2. THE CONCEPT: Семантическое сохранение, а не сокрытие -->
+          <!-- 2. THE CONCEPT: Semantic Preservation, Not Concealment -->
           <div class="space-y-12">
             <div class="p-8 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-4 max-w-4xl mx-auto shadow-inner">
               <div class="flex items-center gap-2 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">
                 <span>THE GLYPHAI CONCEPT · TIER 2 REVERSIBLE TELEMETRY</span>
               </div>
-              <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Семантическое сохранение, а не сокрытие.
+              <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight" data-i18n="concept_title">
+                Semantic Preservation, Not Concealment.
               </h3>
-              <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-sans">
-                Мы не шифруем и не маскируем сырой текст; мы изменяем его репрезентативный класс. Исходные логи декомпозируются на семантические атомы и онтологические отношения. Посредством трансформации, управляемой Кодбуком (Codebook v0.2.1), они маппятся на структурированные глифы. Исходная поверхностная форма (surface form) архитектурно отбрасывается. Смысл сохраняется для аналитики; возможность восстановления исходного текста устраняется на уровне архитектуры, а не вычислительной сложности.
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-sans" data-i18n="concept_desc">
+                We do not encrypt or conceal raw text; we change its representational class. Raw logs are decomposed into semantic atoms and ontological relations. Through Codebook-driven transformation (Codebook v0.2.1), they are mapped to structured glyphs. The original surface form is architecturally discarded. Meaning is preserved for analytics; the possibility of reconstructing the raw text is eliminated at the architectural level, rather than through computational complexity.
               </p>
             </div>
 
-            <!-- Pipeline Graphics grid: Пайплайн семантической трансформации (3 шага) -->
+            <!-- Pipeline Graphics grid: 3-Step Semantic Transformation Pipeline -->
             <div class="space-y-6">
               <div class="text-center max-w-2xl mx-auto space-y-2">
-                <h4 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                  Пайплайн семантической трансформации
+                <h4 class="text-xl sm:text-2xl font-bold text-white tracking-tight" data-i18n="pipe_title">
+                  Semantic Transformation Pipeline
                 </h4>
-                <p class="text-xs sm:text-sm text-slate-400 font-mono">
-                  3 квантифицированных этапа детерминированного онтологического анализа
+                <p class="text-xs sm:text-sm text-slate-400 font-mono" data-i18n="pipe_desc">
+                  3 quantified stages of deterministic ontological evaluation
                 </p>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
                 <!-- Step 1 -->
                 <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 relative space-y-3.5 hover:border-slate-700 transition-colors flex flex-col justify-between">
-                  <div className="space-y-3">
+                  <div class="space-y-3">
                     <div class="flex items-center justify-between mb-3">
                       <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">1</div>
                       <span class="text-[10px] font-mono text-emerald-400/90 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40 uppercase">Ingestion</span>
                     </div>
-                    <h5 class="text-lg font-bold text-white">Локализованный сбор и минимизация данных</h5>
+                    <h5 class="text-lg font-bold text-white" data-i18n="step1_title">Localised Ingestion & Data Minimisation</h5>
                     <div class="space-y-2 text-xs font-mono mt-3">
                       <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
-                        <span class="text-emerald-400 font-semibold block mb-0.5">Действие:</span>
-                        <span>Open-source коллектор работает в режиме read-only, без сетевых соединений.</span>
+                        <span class="text-emerald-400 font-semibold block mb-0.5" data-i18n="label_action">Action:</span>
+                        <span data-i18n="step1_action">Open-source collector operates read-only with zero network egress.</span>
                       </div>
                       <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
-                        <span class="text-cyan-400 font-semibold block mb-0.5">Онтология:</span>
-                        <span>Извлекается сырая телеметрия (kernel, BMC, DCGM). Маскировка (хеширование hostname, удаление IPv4/IPv6/MAC, редакция серийных номеров) применяется до создания архива. Сырой текст никогда не покидает локальную среду в своей исходной форме.</span>
+                        <span class="text-cyan-400 font-semibold block mb-0.5" data-i18n="label_ontology">Ontology:</span>
+                        <span data-i18n="step1_ontology">Raw telemetry (kernel, BMC, DCGM) extracted. Masking (hostname hashing, IPv4/IPv6/MAC removal, serial number redaction) is applied prior to archive creation. Raw text never leaves the local environment in its original form.</span>
                       </div>
                     </div>
                   </div>
@@ -890,20 +891,20 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
 
                 <!-- Step 2 -->
                 <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 relative space-y-3.5 hover:border-slate-700 transition-colors flex flex-col justify-between">
-                  <div className="space-y-3">
+                  <div class="space-y-3">
                     <div class="flex items-center justify-between mb-3">
                       <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center font-mono font-bold text-cyan-400 border border-cyan-500/20">2</div>
                       <span class="text-[10px] font-mono text-cyan-400/90 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40 uppercase">Translation</span>
                     </div>
-                    <h5 class="text-lg font-bold text-white">Семантическая трансляция и разделение декодеров</h5>
+                    <h5 class="text-lg font-bold text-white" data-i18n="step2_title">Semantic Transformation & Decoder Separation</h5>
                     <div class="space-y-2 text-xs font-mono mt-3">
                       <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
-                        <span class="text-emerald-400 font-semibold block mb-0.5">Действие:</span>
-                        <span>Офлайн-обработка маскированного архива.</span>
+                        <span class="text-emerald-400 font-semibold block mb-0.5" data-i18n="label_action">Action:</span>
+                        <span data-i18n="step2_action">Offline processing of masked telemetry archive.</span>
                       </div>
                       <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
-                        <span class="text-cyan-400 font-semibold block mb-0.5">Онтология:</span>
-                        <span>Вендорские диалекты парсятся в семантические атомы и онтологические отношения с Codebook v0.2.1. Трансформация намеренно many-to-one: различные формулировки маппятся на один концепт, архитектурно разрывая путь к уникальному восстановлению исходного текста.</span>
+                        <span class="text-cyan-400 font-semibold block mb-0.5" data-i18n="label_ontology">Ontology:</span>
+                        <span data-i18n="step2_ontology">Vendor dialects parsed into semantic atoms and ontological relations via Codebook v0.2.1. Transformation is deliberately many-to-one: varied surface phrasings map to a single concept, architecturally severing any unique reconstruction path to raw text.</span>
                       </div>
                     </div>
                   </div>
@@ -911,20 +912,20 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
 
                 <!-- Step 3 -->
                 <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 relative space-y-3.5 hover:border-slate-700 transition-colors flex flex-col justify-between">
-                  <div className="space-y-3">
+                  <div class="space-y-3">
                     <div class="flex items-center justify-between mb-3">
                       <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center font-mono font-bold text-purple-400 border border-purple-500/20">3</div>
                       <span class="text-[10px] font-mono text-purple-400/90 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-800/40 uppercase">Scoring</span>
                     </div>
-                    <h5 class="text-lg font-bold text-white">Детерминированное скорингование и вывод</h5>
+                    <h5 class="text-lg font-bold text-white" data-i18n="step3_title">Deterministic Scoring & Policy-Bound Output</h5>
                     <div class="space-y-2 text-xs font-mono mt-3">
                       <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
-                        <span class="text-emerald-400 font-semibold block mb-0.5">Действие:</span>
-                        <span>Генерация итогового отчета о здоровье флота.</span>
+                        <span class="text-emerald-400 font-semibold block mb-0.5" data-i18n="label_action">Action:</span>
+                        <span data-i18n="step3_action">Generation of final fleet health verification report.</span>
                       </div>
                       <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
-                        <span class="text-cyan-400 font-semibold block mb-0.5">Онтология:</span>
-                        <span>Система вычисляет Health Score (0–100%) как детерминированную функцию сохраненных семантических концептов и их штрафных весов. Итоговый отчет — контролируемая реконструкция: доказательства без сохранения сырых строк логов.</span>
+                        <span class="text-cyan-400 font-semibold block mb-0.5" data-i18n="label_ontology">Ontology:</span>
+                        <span data-i18n="step3_ontology">Computes Health Score (0–100%) as a deterministic function of retained concepts and penalty weights. Final report is controlled reconstruction: decision-grade evidence without retaining or exposing original raw log lines.</span>
                       </div>
                     </div>
                   </div>
@@ -937,93 +938,93 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
               <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div class="text-3xl font-extrabold text-emerald-400">12</div>
-                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1">Верифицированных AI-Кластеров</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1" data-i18n="badge_clusters">AI Fleets Verified</div>
                 </div>
                 <div>
                   <div class="text-3xl font-extrabold text-emerald-400">34,500+</div>
-                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1">Оцененных GPU Ускорителей</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1" data-i18n="badge_gpus">GPUs Evaluated</div>
                 </div>
                 <div>
                   <div class="text-3xl font-extrabold text-emerald-400">8</div>
-                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1">Аппаратных Брокеров Оборудования</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1" data-i18n="badge_brokers">Hardware Asset Brokers</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 3. PRICING TIERS MATRIX (Скорректированная терминология) -->
+          <!-- 3. PRICING TIERS MATRIX -->
           <div class="space-y-8">
             <div class="text-center space-y-2">
-              <h3 class="text-2xl font-bold text-white tracking-tight">Тарифные Планы & Параметры Обслуживания</h3>
-              <p class="text-slate-400 text-sm">Четкие метрики производительности, масштабированные под ваши вычислительные задачи.</p>
+              <h3 class="text-2xl font-bold text-white tracking-tight" data-i18n="pricing_title">Pricing Tiers & Service Parameters</h3>
+              <p class="text-slate-400 text-sm" data-i18n="pricing_subtitle">Clear performance metrics scaled precisely to your operational compute requirements.</p>
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-slate-800 shadow-md">
               <table class="w-full text-left border-collapse bg-slate-900/60 font-mono text-sm">
                 <thead>
                   <tr class="bg-slate-800/60 text-slate-300 font-semibold text-xs tracking-wider uppercase border-b border-slate-800 font-mono">
-                    <th class="p-4">Tier</th>
-                    <th class="p-4">Размер флота</th>
-                    <th class="p-4">Цена за GPU</th>
-                    <th class="p-4">Время выполнения (Turnaround)</th>
-                    <th class="p-4">Уровень поддержки</th>
-                    <th class="p-4">Ключевые онтологические функции</th>
+                    <th class="p-4" data-i18n="th_tier">Tier</th>
+                    <th class="p-4" data-i18n="th_fleet">Fleet Size</th>
+                    <th class="p-4" data-i18n="th_price">Price per GPU</th>
+                    <th class="p-4" data-i18n="th_turnaround">Turnaround</th>
+                    <th class="p-4" data-i18n="th_support">Support</th>
+                    <th class="p-4" data-i18n="th_features">Key Ontological Features</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800 text-slate-300">
                   <tr class="hover:bg-slate-800/20 transition-colors">
                     <td class="p-4 font-bold text-white">Pilot</td>
-                    <td class="p-4">1 сервер (8 GPU)</td>
+                    <td class="p-4" data-i18n="pilot_fleet">1 server (8 GPUs)</td>
                     <td class="p-4 text-emerald-400 font-semibold text-base">€35</td>
-                    <td class="p-4">48 часов</td>
-                    <td class="p-4 text-slate-400">Только Email</td>
-                    <td class="p-4 text-slate-300 font-sans text-xs">Бесплатный первый отчет, стандартное семантическое маппирование, валидация read-only коллектора.</td>
+                    <td class="p-4" data-i18n="pilot_turnaround">48 Hours</td>
+                    <td class="p-4 text-slate-400" data-i18n="pilot_support">Email Only</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs" data-i18n="pilot_features">Free first report, standard semantic vocabulary mapping, read-only collector validation.</td>
                   </tr>
                   <tr class="hover:bg-slate-800/20 transition-colors">
                     <td class="p-4 font-bold text-white">Transactional Audit</td>
-                    <td class="p-4">2–24 сервера (16–192 GPU)</td>
+                    <td class="p-4" data-i18n="audit_fleet">2–24 servers (16–192 GPUs)</td>
                     <td class="p-4 text-emerald-400 font-semibold text-base">€28</td>
-                    <td class="p-4">3–5 рабочих дней</td>
-                    <td class="p-4 text-slate-400">Стандартный (рабочие часы)</td>
-                    <td class="p-4 text-slate-300 font-sans text-xs">Пакетный прием, маскировка по умолчанию, 30-дневное хранение логов, стандартный Кодбук v0.2.1.</td>
+                    <td class="p-4" data-i18n="audit_turnaround">3–5 Biz Days</td>
+                    <td class="p-4 text-slate-400" data-i18n="audit_support">Standard (9-5)</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs" data-i18n="audit_features">Batch intake, default data masking, 30-day secure log retention, standard Codebook v0.2.1.</td>
                   </tr>
                   <tr class="hover:bg-slate-800/20 transition-colors bg-slate-800/10">
                     <td class="p-4 font-bold text-white">
                       <div class="flex items-center gap-1.5 flex-wrap">
                         <span>High-Volume Fleet</span>
-                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-1.5 py-0.5 rounded font-normal uppercase">Популярный</span>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-1.5 py-0.5 rounded font-normal uppercase" data-i18n="badge_popular">Popular</span>
                       </div>
                     </td>
-                    <td class="p-4">25–99 серверов (200–792 GPU)</td>
+                    <td class="p-4" data-i18n="hv_fleet">25–99 servers (200–792 GPUs)</td>
                     <td class="p-4 text-emerald-400 font-semibold text-base">€22</td>
-                    <td class="p-4">5–7 рабочих дней</td>
-                    <td class="p-4 text-slate-400">Приоритетный (выделенный канал)</td>
-                    <td class="p-4 text-slate-300 font-sans text-xs">Словарь, адаптированный под вашу аппаратную топологию, аудит маскировки на каждый пакет, ускоренный парсинг.</td>
+                    <td class="p-4" data-i18n="hv_turnaround">5–7 Biz Days</td>
+                    <td class="p-4 text-slate-400" data-i18n="hv_support">Priority Channel</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs" data-i18n="hv_features">Vocabulary tuned to specific hardware topology, masking audit per batch, expedited parsing.</td>
                   </tr>
                   <tr class="hover:bg-slate-800/20 transition-colors">
                     <td class="p-4 font-bold text-white">Institutional</td>
-                    <td class="p-4">100+ серверов (800+ GPU)</td>
-                    <td class="p-4 text-emerald-400 font-semibold text-base">Индивидуально</td>
-                    <td class="p-4">Индивидуальный SLA (&lt; 72ч)</td>
-                    <td class="p-4 text-slate-400">Выделенный инженер 24/7</td>
-                    <td class="p-4 text-slate-300 font-sans text-xs">Опция on-premise коллектора, генерация кастомного Кодбука, формальная документация по комплаенсу.</td>
+                    <td class="p-4" data-i18n="inst_fleet">100+ servers (800+ GPUs)</td>
+                    <td class="p-4 text-emerald-400 font-semibold text-base" data-i18n="inst_price">Custom Matrix</td>
+                    <td class="p-4" data-i18n="inst_turnaround">&lt; 72 Hours Custom</td>
+                    <td class="p-4 text-slate-400" data-i18n="inst_support">24/7 Dedicated Eng</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs" data-i18n="inst_features">On-premise collector option, custom Codebook generation, formal compliance documentation, API access.</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div class="text-center text-xs font-mono text-slate-400">
-              Годовые оценки предполагают 2.4 проверки в год. Итоговая цена и SLA подтверждаются в письменном виде до начала работ. Все цены в EUR, без НДС.
+            <div class="text-center text-xs font-mono text-slate-400" data-i18n="pricing_note">
+              Annual assessments assume 2.4 evaluations per year. Final pricing and SLA confirmed in writing prior to engagement. All prices in EUR, excl. VAT.
             </div>
           </div>
 
-          <!-- 4. СИНХРОНИЗАЦИЯ FAQ (Codebook-Controlled Non-Interpretability & Data Minimisation) -->
+          <!-- 4. FAQ (Codebook-Controlled Non-Interpretability & Data Minimisation) -->
           <div class="space-y-6 pt-4 border-t border-slate-800">
             <div class="text-center space-y-2">
               <div class="inline-flex items-center gap-2 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">
                 <span>CODEBOOK-CONTROLLED NON-INTERPRETABILITY & DATA MINIMISATION</span>
               </div>
-              <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Часто Задаваемые Вопросы (FAQ)</h3>
+              <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight" data-i18n="faq_title">Frequently Asked Questions (FAQ)</h3>
             </div>
 
             <div class="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
@@ -1031,10 +1032,10 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
               <div class="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
                 <h4 class="text-base sm:text-lg font-bold text-emerald-400 flex items-start gap-2">
                   <span class="font-mono text-xs text-slate-400 mt-1">Q:</span>
-                  <span>Что происходит, если логи на сервере были стерты?</span>
+                  <span data-i18n="q1_title">What happens if logs on the server have been wiped?</span>
                 </h4>
-                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-emerald-500/40">
-                  Архитектурная необратимость требует наличия данных. Если сырые логи отсутствуют, система не может реконструировать исторические семантические атомы. Оценка строго переключается на активные диагностические тесты (например, dcgmi diag), а в отчете явно фиксируется статус "No historical semantic data". Система сохраняет неопределенность, а не галлюцинирует оценку.
+                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-emerald-500/40" data-i18n="q1_desc">
+                  Architectural irreversibility requires data. If raw logs are absent, the system cannot reconstruct historical semantic atoms. Evaluation strictly reverts to active diagnostic benchmarks (e.g. dcgmi diag), with the report explicitly recording "No historical semantic data". The system preserves uncertainty rather than hallucinating a score.
                 </p>
               </div>
 
@@ -1042,10 +1043,10 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
               <div class="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
                 <h4 class="text-base sm:text-lg font-bold text-cyan-400 flex items-start gap-2">
                   <span class="font-mono text-xs text-slate-400 mt-1">Q:</span>
-                  <span>Чем это отличается от стандартной анонимизации или шифрования?</span>
+                  <span data-i18n="q2_title">How does this differ from standard anonymization or encryption?</span>
                 </h4>
-                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-cyan-500/40">
-                  Шифрование сохраняет исходную форму и скрывает ее обратимо. Анонимизация удаляет идентификаторы, но оставляет инференциальные пути intact. GlyphAI применяет Codebook-Controlled Non-Interpretability: он изменяет репрезентативный класс данных. Исходная поверхностная форма не хранится; сохраняются только структурированные семантические концепты, необходимые для легитимной задачи (оценка здоровья), что обеспечивает строгую Data Minimisation (минимизацию данных) на архитектурном уровне.
+                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-cyan-500/40" data-i18n="q2_desc">
+                  Encryption preserves the original form and conceals it reversibly. Anonymization removes identifiers while leaving inferential paths intact. GlyphAI applies Codebook-Controlled Non-Interpretability: it changes the representational class of the data. The original surface form is never stored; only structured semantic concepts strictly required for the health scoring task are retained, guaranteeing true Data Minimisation at the architectural level.
                 </p>
               </div>
 
@@ -1053,10 +1054,10 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
               <div class="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
                 <h4 class="text-base sm:text-lg font-bold text-purple-400 flex items-start gap-2">
                   <span class="font-mono text-xs text-slate-400 mt-1">Q:</span>
-                  <span>Кому принадлежат данные и можно ли их восстановить обратно в исходный лог?</span>
+                  <span data-i18n="q3_title">Who owns the data and can it be reconstructed back into the original raw log?</span>
                 </h4>
-                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-purple-500/40">
-                  Трансформированное глиф-представление является many-to-one маппингом. Поскольку исходная лингвистическая поверхность отбрасывается в процессе трансформации, уникальная реконструкция сырого текста архитектурно не поддерживается, а не просто вычислительно затруднена. Исходные логи удаляются из систем GlyphAI в течение 30 дней после генерации отчета, гарантируя, что семантический слой остается единственным операционным объектом.
+                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-purple-500/40" data-i18n="q3_desc">
+                  The transformed glyph representation is a many-to-one mapping. Because the original linguistic surface is discarded during transformation, unique reconstruction of the raw text is architecturally unviable rather than merely computationally difficult. Raw logs are purged from GlyphAI intake nodes within 30 days of report generation, ensuring the semantic tier remains the sole operational artifact.
                 </p>
               </div>
             </div>
@@ -1065,12 +1066,12 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
           <!-- 5. TWO ZERO-FRICTION CALL TO ACTIONS -->
           <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
             <a href="mailto:vitali.demille@glyphai.ie?subject=Request%20Free%20Pilot%20GPU%20Health%20Audit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm font-mono transition-all shadow-lg shadow-emerald-950/40 cursor-pointer">
-              <span>Запустить бесплатный пилот (8 GPU / 1 Сервер)</span>
+              <span data-i18n="cta_pilot_btn">Launch Free Pilot (8 GPUs / 1 Server)</span>
               <span>→</span>
             </a>
             <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm font-mono transition-all cursor-pointer">
               <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
-              <span>Открыть код коллектора на GitHub</span>
+              <span data-i18n="cta_github_btn">Open Collector Code on GitHub</span>
             </a>
           </div>
 
@@ -1177,7 +1178,79 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
           surv_label: '30-Day Survival Chance',
           cluster_tag: 'SUPERPOD CLUSTER SIMULATION (64 GPUs · 8 NODES x 8 SXM5)',
           cluster_title: 'Cluster Fleet Health Heatmap Under Stress',
-          cluster_hint: 'Click any GPU card in the cluster grid to inspect its live telemetry in the analyzer above:'
+          cluster_hint: 'Click any GPU card in the cluster grid to inspect its live telemetry in the analyzer above:',
+
+          // MVP Commercial & Concept Overhaul
+          hero_pill: 'Zero-Trust Telemetry Engine',
+          hero_title: 'Architectural Irreversibility for Hardware Assets.',
+          hero_desc: 'Raw GPU logs are linguistic noise. GlyphAI translates vendor dialects (NVIDIA Xid, IPMI SEL, DCGM) into a single semantic vocabulary. Each event becomes a quantifiable concept. Health Score is the deterministic sum of these concepts, not a probabilistic guess.',
+          card1_title: 'Read-Only Execution',
+          card1_desc: 'No installation or continuous background processes required. Runs entirely on demand within your perimeter.',
+          card2_title: 'Air-Gapped Privacy',
+          card2_desc: 'No outbound network traffic generated. Zero diagnostic connections back to external nodes.',
+          card3_title: 'Masked by Default',
+          card3_desc: 'Hostname hashing, IPv4/IPv6/MAC removal, and hardware serial redaction applied locally before archive generation.',
+          hero_cta_btn: 'Launch Free Pilot',
+          hero_gh_btn: 'Open Collector Code on GitHub ↗',
+
+          concept_title: 'Semantic Preservation, Not Concealment.',
+          concept_desc: 'We do not encrypt or conceal raw text; we change its representational class. Raw logs are decomposed into semantic atoms and ontological relations. Through Codebook-driven transformation (Codebook v0.2.1), they are mapped to structured glyphs. The original surface form is architecturally discarded. Meaning is preserved for analytics; the possibility of reconstructing the raw text is eliminated at the architectural level, rather than through computational complexity.',
+
+          pipe_title: 'Semantic Transformation Pipeline',
+          pipe_desc: '3 quantified stages of deterministic ontological evaluation',
+          label_action: 'Action:',
+          label_ontology: 'Ontology:',
+          step1_title: 'Localised Ingestion & Data Minimisation',
+          step1_action: 'Open-source collector operates read-only with zero network egress.',
+          step1_ontology: 'Raw telemetry (kernel, BMC, DCGM) extracted. Masking (hostname hashing, IPv4/IPv6/MAC removal, serial number redaction) is applied prior to archive creation. Raw text never leaves the local environment in its original form.',
+          step2_title: 'Semantic Transformation & Decoder Separation',
+          step2_action: 'Offline processing of masked telemetry archive.',
+          step2_ontology: 'Vendor dialects parsed into semantic atoms and ontological relations via Codebook v0.2.1. Transformation is deliberately many-to-one: varied surface phrasings map to a single concept, architecturally severing any unique reconstruction path to raw text.',
+          step3_title: 'Deterministic Scoring & Policy-Bound Output',
+          step3_action: 'Generation of final fleet health verification report.',
+          step3_ontology: 'Computes Health Score (0–100%) as a deterministic function of retained concepts and penalty weights. Final report is controlled reconstruction: decision-grade evidence without retaining or exposing original raw log lines.',
+
+          badge_clusters: 'AI Fleets Verified',
+          badge_gpus: 'GPUs Evaluated',
+          badge_brokers: 'Hardware Asset Brokers',
+
+          pricing_title: 'Pricing Tiers & Service Parameters',
+          pricing_subtitle: 'Clear performance metrics scaled precisely to your operational compute requirements.',
+          th_tier: 'Tier',
+          th_fleet: 'Fleet Size',
+          th_price: 'Price per GPU',
+          th_turnaround: 'Turnaround',
+          th_support: 'Support',
+          th_features: 'Key Ontological Features',
+          pilot_fleet: '1 server (8 GPUs)',
+          pilot_turnaround: '48 Hours',
+          pilot_support: 'Email Only',
+          pilot_features: 'Free first report, standard semantic vocabulary mapping, read-only collector validation.',
+          audit_fleet: '2–24 servers (16–192 GPUs)',
+          audit_turnaround: '3–5 Biz Days',
+          audit_support: 'Standard (9-5)',
+          audit_features: 'Batch intake, default data masking, 30-day secure log retention, standard Codebook v0.2.1.',
+          badge_popular: 'Popular',
+          hv_fleet: '25–99 servers (200–792 GPUs)',
+          hv_turnaround: '5–7 Biz Days',
+          hv_support: 'Priority Channel',
+          hv_features: 'Vocabulary tuned to specific hardware topology, masking audit per batch, expedited parsing.',
+          inst_fleet: '100+ servers (800+ GPUs)',
+          inst_price: 'Custom Matrix',
+          inst_turnaround: '< 72 Hours Custom',
+          inst_support: '24/7 Dedicated Eng',
+          inst_features: 'On-premise collector option, custom Codebook generation, formal compliance documentation, API access.',
+          pricing_note: 'Annual assessments assume 2.4 evaluations per year. Final pricing and SLA confirmed in writing prior to engagement. All prices in EUR, excl. VAT.',
+
+          faq_title: 'Frequently Asked Questions (FAQ)',
+          q1_title: 'What happens if logs on the server have been wiped?',
+          q1_desc: 'Architectural irreversibility requires data. If raw logs are absent, the system cannot reconstruct historical semantic atoms. Evaluation strictly reverts to active diagnostic benchmarks (e.g. dcgmi diag), with the report explicitly recording "No historical semantic data". The system preserves uncertainty rather than hallucinating a score.',
+          q2_title: 'How does this differ from standard anonymization or encryption?',
+          q2_desc: 'Encryption preserves the original form and conceals it reversibly. Anonymization removes identifiers while leaving inferential paths intact. GlyphAI applies Codebook-Controlled Non-Interpretability: it changes the representational class of the data. The original surface form is never stored; only structured semantic concepts strictly required for the health scoring task are retained, guaranteeing true Data Minimisation at the architectural level.',
+          q3_title: 'Who owns the data and can it be reconstructed back into the original raw log?',
+          q3_desc: 'The transformed glyph representation is a many-to-one mapping. Because the original linguistic surface is discarded during transformation, unique reconstruction of the raw text is architecturally unviable rather than merely computationally difficult. Raw logs are purged from GlyphAI intake nodes within 30 days of report generation, ensuring the semantic tier remains the sole operational artifact.',
+          cta_pilot_btn: 'Launch Free Pilot (8 GPUs / 1 Server)',
+          cta_github_btn: 'Open Collector Code on GitHub'
         },
         ru: {
           banner_tag: 'СИСТЕМА ТЕЛЕМЕТРИИ И АНАЛИТИКИ ЗДОРОВЬЯ GPU · VERTER V0.2.1',
@@ -1202,7 +1275,79 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
           surv_label: 'Вероятность работы 30 дней',
           cluster_tag: 'СИМУЛЯЦИЯ КЛАСТЕРА SUPERPOD (64 GPU · 8 НОД ПО 8x SXM5)',
           cluster_title: 'Карта здоровья кластера при нагрузке',
-          cluster_hint: 'Нажмите на любую карту в кластере, чтобы загрузить ее телеметрию в панель анализатора выше:'
+          cluster_hint: 'Нажмите на любую карту в кластере, чтобы загрузить ее телеметрию в панель анализатора выше:',
+
+          // MVP Commercial & Concept Overhaul
+          hero_pill: 'Zero-Trust Telemetry Engine',
+          hero_title: 'Архитектурная необратимость для аппаратных активов.',
+          hero_desc: 'Сырые логи GPU — это лингвистический шум. GlyphAI транслирует вендорские диалекты (NVIDIA Xid, IPMI SEL, DCGM) в единый семантический словарь. Каждое событие становится квантифицируемым концептом. Health Score — это детерминированная сумма этих концептов, а не вероятностная догадка.',
+          card1_title: 'Read-Only Выполнение',
+          card1_desc: 'Никаких постоянных фоновых процессов и инсталляций. Коллектор выполняется строго по требованию в вашей среде.',
+          card2_title: 'Air-Gapped Приватность',
+          card2_desc: 'Ноль исходящего сетевого трафика. Отсутствуют любые внешние диагностические соединения.',
+          card3_title: 'Маскирование по умолчанию',
+          card3_desc: 'Хеширование hostname, удаление IPv4/IPv6/MAC и редакция серийных номеров до создания архива.',
+          hero_cta_btn: 'Запустить бесплатный пилот',
+          hero_gh_btn: 'Открыть код коллектора на GitHub ↗',
+
+          concept_title: 'Семантическое сохранение, а не сокрытие.',
+          concept_desc: 'Мы не шифруем и не маскируем сырой текст; мы изменяем его репрезентативный класс. Исходные логи декомпозируются на семантические атомы и онтологические отношения. Посредством трансформации, управляемой Кодбуком (Codebook v0.2.1), они маппятся на структурированные глифы. Исходная поверхностная форма (surface form) архитектурно отбрасывается. Смысл сохраняется для аналитики; возможность восстановления исходного текста устраняется на уровне архитектуры, а не вычислительной сложности.',
+
+          pipe_title: 'Пайплайн семантической трансформации',
+          pipe_desc: '3 квантифицированных этапа детерминированного онтологического анализа',
+          label_action: 'Действие:',
+          label_ontology: 'Онтология:',
+          step1_title: 'Локализованный сбор и минимизация данных',
+          step1_action: 'Open-source коллектор работает в режиме read-only, без сетевых соединений.',
+          step1_ontology: 'Извлекается сырая телеметрия (kernel, BMC, DCGM). Маскировка (хеширование hostname, удаление IPv4/IPv6/MAC, редакция серийных номеров) применяется до создания архива. Сырой текст никогда не покидает локальную среду в своей исходной форме.',
+          step2_title: 'Семантическая трансляция и разделение декодеров',
+          step2_action: 'Офлайн-обработка маскированного архива.',
+          step2_ontology: 'Вендорские диалекты парсятся в семантические атомы и онтологические отношения с Codebook v0.2.1. Трансформация намеренно many-to-one: различные формулировки маппятся на один концепт, архитектурно разрывая путь к уникальному восстановлению исходного текста.',
+          step3_title: 'Детерминированное скорингование и вывод',
+          step3_action: 'Генерация итогового отчета о здоровье флота.',
+          step3_ontology: 'Система вычисляет Health Score (0–100%) как детерминированную функцию сохраненных семантических концептов и их штрафных весов. Итоговый отчет — контролируемая реконструкция: доказательства без сохранения сырых строк логов.',
+
+          badge_clusters: 'Верифицированных AI-Кластеров',
+          badge_gpus: 'Оцененных GPU Ускорителей',
+          badge_brokers: 'Аппаратных Брокеров Оборудования',
+
+          pricing_title: 'Тарифные Планы & Параметры Обслуживания',
+          pricing_subtitle: 'Четкие метрики производительности, масштабированные под ваши вычислительные задачи.',
+          th_tier: 'Tier',
+          th_fleet: 'Размер флота',
+          th_price: 'Цена за GPU',
+          th_turnaround: 'Время выполнения (Turnaround)',
+          th_support: 'Уровень поддержки',
+          th_features: 'Ключевые онтологические функции',
+          pilot_fleet: '1 сервер (8 GPU)',
+          pilot_turnaround: '48 часов',
+          pilot_support: 'Только Email',
+          pilot_features: 'Бесплатный первый отчет, стандартное семантическое маппирование, валидация read-only коллектора.',
+          audit_fleet: '2–24 сервера (16–192 GPU)',
+          audit_turnaround: '3–5 рабочих дней',
+          audit_support: 'Стандартный (рабочие часы)',
+          audit_features: 'Пакетный прием, маскировка по умолчанию, 30-дневное хранение логов, стандартный Кодбук v0.2.1.',
+          badge_popular: 'Популярный',
+          hv_fleet: '25–99 серверов (200–792 GPU)',
+          hv_turnaround: '5–7 рабочих дней',
+          hv_support: 'Приоритетный (выделенный канал)',
+          hv_features: 'Словарь, адаптированный под вашу аппаратную топологию, аудит маскировки на каждый пакет, ускоренный парсинг.',
+          inst_fleet: '100+ серверов (800+ GPU)',
+          inst_price: 'Индивидуально',
+          inst_turnaround: 'Индивидуальный SLA (< 72ч)',
+          inst_support: 'Выделенный инженер 24/7',
+          inst_features: 'Опция on-premise коллектора, генерация кастомного Кодбука, формальная документация по комплаенсу.',
+          pricing_note: 'Годовые оценки предполагают 2.4 проверки в год. Итоговая цена и SLA подтверждаются в письменном виде до начала работ. Все цены в EUR, без НДС.',
+
+          faq_title: 'Часто Задаваемые Вопросы (FAQ)',
+          q1_title: 'Что происходит, если логи на сервере были стерты?',
+          q1_desc: 'Архитектурная необратимость требует наличия данных. Если сырые логи отсутствуют, система не может реконструировать исторические семантические атомы. Оценка строго переключается на активные диагностические тесты (например, dcgmi diag), а в отчете явно фиксируется статус "No historical semantic data". Система сохраняет неопределенность, а не галлюцинирует оценку.',
+          q2_title: 'Чем это отличается от стандартной анонимизации или шифрования?',
+          q2_desc: 'Шифрование сохраняет исходную форму и скрывает ее обратимо. Анонимизация удаляет идентификаторы, но оставляет инференциальные пути intact. GlyphAI применяет Codebook-Controlled Non-Interpretability: он изменяет репрезентативный класс данных. Исходная поверхностная форма не хранится; сохраняются только структурированные семантические концепты, необходимые для легитимной задачи (оценка здоровья), что обеспечивает строгую Data Minimisation (минимизацию данных) на архитектурном уровне.',
+          q3_title: 'Кому принадлежат данные и можно ли их восстановить обратно в исходный лог?',
+          q3_desc: 'Трансформированное глиф-представление является many-to-one маппингом. Поскольку исходная лингвистическая поверхность отбрасывается в процессе трансформации, уникальная реконструкция сырого текста архитектурно не поддерживается, а не просто вычислительно затруднена. Исходные логи удаляются из систем GlyphAI в течение 30 дней после генерации отчета, гарантируя, что семантический слой остается единственным операционным объектом.',
+          cta_pilot_btn: 'Запустить бесплатный пилот (8 GPU / 1 Сервер)',
+          cta_github_btn: 'Открыть код коллектора на GitHub'
         }
       };
 
