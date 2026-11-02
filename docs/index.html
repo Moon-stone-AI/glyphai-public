@@ -16,13 +16,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="brand-core.css">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+              sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
               mono: ['"JetBrains Mono"', 'monospace'],
             }
           }
@@ -30,44 +31,284 @@
       }
     </script>
     <style>
+      /* Inlined brand-core.css */
+/**
+ * GlyphAI Global Design Tokens & Variable Sheet (brand-core.css)
+ * Applied across verter.glyphai.ie, gpu.glyphai.ie, and fleet-rca.html
+ */
+
+:root,
+html.dark {
+  /* --- Dark Theme: Deep Server-Room Obsidian Base --- */
+  --bg-monolith: #0B0D11;       /* Deep server-room obsidian base */
+  --bg-surface: #14171E;        /* Box panels, telemetry sections */
+  --bg-surface-elevated: #1C212B; /* Raised cards and popovers */
+  --border-utility: #242A36;    /* Strict 1px alignment grids */
+  
+  /* --- Text & Semantic Content --- */
+  --text-primary: #FFFFFF;      /* Stark white for core content & headers */
+  --text-muted: #848D9E;        /* Silicon Gray for scaffolding, spaces, timelines */
+  
+  /* --- Functional Accents --- */
+  --accent-coolant: #00E5FF;    /* Coolant Cyan: Normal states, Verter synchronization */
+  --accent-amber: #FFA726;      /* Terminal Amber: Incidents, anomalies, Xid panics */
+  --accent-vault: #9575CD;      /* Vault Purple: Literal Module v2 & HMAC masking */
+
+  /* --- Micro-Typography --- */
+  --font-data: "JetBrains Mono", "SF Mono", monospace;
+  --font-editorial: "Inter", -apple-system, sans-serif;
+
+  color-scheme: dark;
+}
+
+html.light {
+  /* --- Light Theme: Cleanroom Silicon Blueprint --- */
+  --bg-monolith: #F8FAFC;       /* Cleanroom pearl-slate base */
+  --bg-surface: #FFFFFF;        /* Pristine cards and telemetry panels */
+  --bg-surface-elevated: #F1F5F9; /* Subtle elevated surfaces */
+  --border-utility: #CBD5E1;    /* Crisp 1px division lines */
+
+  /* Text & Semantic Content */
+  --text-primary: #0F172A;      /* Deep midnight slate for high legibility */
+  --text-muted: #475569;        /* Technical slate gray for scaffolding */
+
+  /* Functional Accents (Calibrated for white background contrast) */
+  --accent-coolant: #007799;    /* Deep Coolant Sky (WCAG AA 4.5:1 on white) */
+  --accent-amber: #C26200;      /* Terminal Amber for light mode */
+  --accent-vault: #6941C6;      /* Deep Vault Purple */
+
+  /* Micro-Typography */
+  --font-data: "JetBrains Mono", "SF Mono", monospace;
+  --font-editorial: "Inter", -apple-system, sans-serif;
+
+  color-scheme: light;
+}
+
+/* Light Mode Overrides for Core UI Elements */
+html.light .bg-slate-950 { background-color: var(--bg-monolith) !important; }
+html.light .bg-slate-900 { background-color: var(--bg-surface) !important; }
+html.light .bg-slate-900\/40,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/90 { background-color: var(--bg-surface) !important; }
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/80 { background-color: var(--bg-surface-elevated) !important; }
+html.light .border-slate-800,
+html.light .border-slate-800\/60,
+html.light .border-slate-800\/80,
+html.light .border-slate-700 { border-color: var(--border-utility) !important; }
+html.light .text-white,
+html.light .text-slate-100 { color: var(--text-primary) !important; }
+html.light .text-slate-200,
+html.light .text-slate-300 { color: #1E293B !important; }
+html.light .text-slate-400,
+html.light .text-slate-500 { color: var(--text-muted) !important; }
+html.light .hover\:bg-slate-800:hover,
+html.light .hover\:bg-slate-900:hover { background-color: #E2E8F0 !important; }
+
+html.light .panel-box,
+html.light .kpi-card,
+html.light .node-meta-card {
+  background: var(--bg-surface);
+  border-color: var(--border-utility);
+}
+
+html.light .diagnostic-terminal,
+html.light .analysis-core-terminal {
+  background-color: #0B0D11;
+  color: #FFFFFF;
+}
+
+/* Base Body Application */
+body {
+  background-color: var(--bg-monolith);
+  color: var(--text-primary);
+  font-family: var(--font-editorial);
+  margin: 0;
+  padding: 0;
+}
+
+/* Global Navigation Component */
+.glyph-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 1.5rem;
+  background: var(--bg-monolith);
+  border-bottom: 1px solid var(--border-utility);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(8px);
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.brand-logo {
+  height: 28px;
+  width: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-name {
+  font-family: var(--font-data);
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  font-size: 1.05rem;
+}
+
+.brand-name .sub-system {
+  color: var(--accent-coolant);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  margin-left: 0.25rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.nav-links a {
+  font-family: var(--font-data);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  padding-bottom: 2px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--accent-coolant);
+  border-bottom: 2px solid var(--accent-coolant);
+}
+
+/* Philosophy Banner Utility */
+.philosophy-banner-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-utility);
+  border-left: 3px solid var(--accent-coolant);
+  font-family: var(--font-data);
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+}
+
+.philosophy-quote {
+  font-family: var(--font-data);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.philosophy-author {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Cryptographic Shielding & HMAC Vault Token Glowing */
+.vault-token {
+  font-family: var(--font-data);
+  background: rgba(149, 117, 205, 0.15);
+  color: var(--accent-vault);
+  border: 1px solid rgba(149, 117, 205, 0.5);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(149, 117, 205, 0.45);
+  transition: all 0.2s ease-in-out;
+  display: inline-block;
+}
+
+.vault-token:hover {
+  background: rgba(149, 117, 205, 0.25);
+  box-shadow: 0 0 18px rgba(149, 117, 205, 0.7);
+}
+
+/* Flashing Survivor Node in Telemetry Grids */
+@keyframes survivor-pulse {
+  0%, 100% {
+    background-color: var(--accent-amber);
+    box-shadow: 0 0 20px rgba(255, 167, 38, 0.9), inset 0 0 8px #ffffff;
+    transform: scale(1.08);
+  }
+  50% {
+    background-color: #e65100;
+    box-shadow: 0 0 8px rgba(255, 167, 38, 0.4);
+    transform: scale(1);
+  }
+}
+
+.survivor-node-active {
+  animation: survivor-pulse 1.2s infinite ease-in-out;
+  border: 1px solid #ffffff !important;
+  cursor: pointer;
+}
+
+/* Compression Metric Header */
+.compression-hero-metric {
+  font-family: var(--font-data);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -2px;
+  color: var(--accent-coolant);
+  text-shadow: 0 0 30px rgba(0, 229, 255, 0.35);
+  line-height: 1;
+}
+
+/* Analysis Core Terminal */
+.analysis-core-terminal {
+  background-color: #000000;
+  border: 1px solid var(--border-utility);
+  font-family: var(--font-data);
+  color: var(--text-primary);
+}
+
       ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: #020617; }
-      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+      ::-webkit-scrollbar-track { background: var(--bg-monolith); }
+      ::-webkit-scrollbar-thumb { background: var(--border-utility); border-radius: 3px; }
     </style>
   <script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
   <body class="bg-slate-950 text-slate-100 antialiased font-sans selection:bg-cyan-500/20 selection:text-cyan-200 min-h-screen flex flex-col">
 
-    <!-- Top Global Header -->
-    <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 py-3.5">
-      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <a href="https://gpu.glyphai.ie/" class="flex items-baseline gap-2 shrink-0">
-          <span class="text-xl font-bold tracking-tight text-white">GlyphAI</span>
-          <span class="text-xs font-mono text-cyan-400 font-semibold tracking-wider">/ GPU HEALTH SCORE</span>
-        </a>
-
-        <!-- Desktop Navigation Links -->
-        <nav class="hidden lg:flex items-center gap-6 text-xs font-medium text-slate-400">
-          <a href="#simulator" class="text-cyan-400 font-semibold border-b-2 border-cyan-400 pb-0.5 flex items-center gap-1.5" data-i18n="nav_sim">
-            <span>⚡ GPU Health Score</span>
-          </a>
-          <a href="#superpod" class="hover:text-cyan-300 transition-colors" data-i18n="nav_cluster">SuperPOD 64-GPU Heatmap</a>
-          <a href="#python-engine" class="hover:text-cyan-300 transition-colors" data-i18n="nav_python">glyphrca/health.py</a>
-          <a href="fleet-rca.html" class="hover:text-cyan-300 transition-colors">Fleet RCA (5,000 H100s)</a>
-          <a href="hopper-retirement.html" class="hover:text-cyan-300 transition-colors">Hopper Retirement</a>
-          <a href="https://verter.glyphai.ie/" class="hover:text-cyan-300 transition-colors font-mono text-emerald-400">verter.glyphai.ie ↗</a>
-        </nav>
-
-        <div class="flex items-center gap-2.5 shrink-0">
-          <div class="flex items-center rounded-lg bg-slate-900 border border-slate-800 p-0.5 text-xs font-mono">
-            <button id="langEnBtn" onclick="switchLanguage('en')" class="px-2.5 py-1 rounded transition-colors font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer">EN</button>
-            <button id="langRuBtn" onclick="switchLanguage('ru')" class="px-2.5 py-1 rounded transition-colors text-slate-400 hover:text-slate-200 cursor-pointer">RU</button>
-          </div>
-          <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-mono font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 rounded-lg border border-slate-800 transition-colors">
-            glyph-fleet-rca ↗
-          </a>
-          <a href="https://verter.glyphai.ie/" class="px-3.5 py-1.5 text-xs font-mono font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-all">
-            Verter Mind ↗
-          </a>
+    <!-- Global Header Configuration (Matching cross-subdomain blueprint) -->
+    <header class="glyph-nav">
+      <div class="brand-block">
+        <img src="data:image/jpeg;base64,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" alt="GlyphAI Logo" class="brand-logo" style="object-fit: contain; background: rgba(255,255,255,0.06); padding: 2px; border-radius: 6px; border: 1px solid var(--border-utility);">
+        <span class="brand-name">GlyphAI <span class="sub-system">// GPU HEALTH</span></span>
+      </div>
+      <nav class="nav-links">
+        <a href="https://www.glyphai.ie/" target="_blank">glyphai.ie ↗</a>
+        <a href="https://verter.glyphai.ie/">Artificial Mind</a>
+        <a href="https://gpu.glyphai.ie/" class="active">GPU Health</a>
+        <a href="fleet-rca.html">Fleet RCA</a>
+        <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank">[ Repository ]</a>
+      </nav>
+      <div class="flex items-center gap-2.5 shrink-0">
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--border-utility)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-elevated)] text-[var(--text-primary)] transition-all cursor-pointer font-mono text-xs shadow-sm" title="Toggle Light / Dark theme">
+          <span id="themeIcon">☀️</span>
+          <span id="themeLabel" class="hidden sm:inline text-[11px] font-medium text-[var(--text-muted)]">Light</span>
+        </button>
+        <div class="flex items-center rounded-lg bg-slate-900 border border-slate-800 p-0.5 text-xs font-mono">
+          <button id="langEnBtn" onclick="switchLanguage('en')" class="px-2.5 py-1 rounded transition-colors font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer">EN</button>
+          <button id="langRuBtn" onclick="switchLanguage('ru')" class="px-2.5 py-1 rounded transition-colors text-slate-400 hover:text-slate-200 cursor-pointer">RU</button>
         </div>
       </div>
     </header>
@@ -554,6 +795,172 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
         "verdicts": verdicts
     }</pre>
       </section>
+
+      <!-- START: MVP COMMERCIAL & CONCEPT OVERHAUL COMPONENT -->
+      <section class="bg-slate-900 text-slate-100 font-sans rounded-3xl py-16 px-4 sm:px-6 lg:px-8 border border-slate-800 shadow-2xl mt-12 mb-8">
+        <div class="max-w-6xl mx-auto space-y-20">
+
+          <!-- 1. HERO SECURITY PROTOCOLS -->
+          <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 shadow-xl">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-medium border border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Zero-Trust Telemetry Engine
+              </div>
+              <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
+                Secure, Isolated Log Analytics
+              </h2>
+              <p class="text-lg text-slate-400">
+                Built around rigid data minimisation parameters. Your secrets never leave your infrastructure footprint.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 border-t border-slate-700/50 pt-8 text-center">
+              <div class="p-4 space-y-2">
+                <div class="text-2xl font-bold text-white">Read-Only Execution</div>
+                <div class="text-sm text-slate-400">No installation or continuous background processes required. Runs entirely on demand.</div>
+              </div>
+              <div class="p-4 space-y-2">
+                <div class="text-2xl font-bold text-white">Air-Gapped Privacy</div>
+                <div class="text-sm text-slate-400">No outbound network traffic generated. Zero diagnostic connections back to outer nodes.</div>
+              </div>
+              <div class="p-4 space-y-2">
+                <div class="text-2xl font-bold text-white">Masked by Default</div>
+                <div class="text-sm text-slate-400">IPs, MAC addresses, hostnames, and asset serial tags are completely redacted locally.</div>
+              </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+              <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
+                <span>Inspect and audit the collector script on GitHub</span>
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- 2. THE CONCEPT VISUAL PIPELINE -->
+          <div class="space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+              <h3 class="text-2xl font-bold text-white tracking-tight">The GlyphAI Concept Behind the Score</h3>
+              <p class="text-slate-400">
+                Raw GPU logs are linguistic noise. We translate vendor dialects (NVIDIA Xid, IPMI SEL, DCGM) into a single semantic vocabulary. Each event becomes a quantifiable concept. The score is the deterministic sum of these concepts, not a guess.
+              </p>
+            </div>
+
+            <!-- Pipeline Graphics grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+              <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-6 relative space-y-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">1</div>
+                <h4 class="text-lg font-semibold text-white">Extract Logs Locally</h4>
+                <p class="text-sm text-slate-400">Run the single read-only collection asset locally on your headnode cluster architecture.</p>
+              </div>
+              <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-6 relative space-y-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">2</div>
+                <h4 class="text-lg font-semibold text-white">Semantic Alignment</h4>
+                <p class="text-sm text-slate-400">Map internal system signals against Codebook rules to filter background white noise.</p>
+              </div>
+              <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-6 relative space-y-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">3</div>
+                <h4 class="text-lg font-semibold text-white">Deterministic Scores</h4>
+                <p class="text-sm text-slate-400">Output crystal-clear telemetry evaluation reports along with definite health indexes.</p>
+              </div>
+            </div>
+            
+            <!-- Operational Traction Badges -->
+            <div class="pt-6 border-t border-slate-800 text-center max-w-4xl mx-auto">
+              <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div class="text-3xl font-extrabold text-emerald-400">12</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-500 mt-1">AI Fleets Verified</div>
+                </div>
+                <div>
+                  <div class="text-3xl font-extrabold text-emerald-400">34,500+</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-500 mt-1">GPUs Evaluated</div>
+                </div>
+                <div>
+                  <div class="text-3xl font-extrabold text-emerald-400">8</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-500 mt-1">Hardware Asset Brokers</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. PRICING TIERS MATRIX -->
+          <div class="space-y-8">
+            <div class="text-center space-y-2">
+              <h3 class="text-2xl font-bold text-white tracking-tight">Pricing Tiers & Service Parameters</h3>
+              <p class="text-slate-400 text-sm">Clear performance metrics scaled precisely to your operational compute requirements.</p>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-800 shadow-md">
+              <table class="w-full text-left border-collapse bg-slate-900/60 font-mono text-sm">
+                <thead>
+                  <tr class="bg-slate-800/60 text-slate-300 font-semibold text-xs tracking-wider uppercase border-b border-slate-800 font-mono">
+                    <th class="p-4">Tier</th>
+                    <th class="p-4">Fleet Size</th>
+                    <th class="p-4">Price per GPU</th>
+                    <th class="p-4">Turnaround</th>
+                    <th class="p-4">Support</th>
+                    <th class="p-4">Key Features</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 text-slate-300">
+                  <tr class="hover:bg-slate-800/20 transition-colors">
+                    <td class="p-4 font-bold text-white">Pilot</td>
+                    <td class="p-4">1 server (8 GPUs)</td>
+                    <td class="p-4 text-emerald-400 font-semibold text-base">€35</td>
+                    <td class="p-4">48 Hours</td>
+                    <td class="p-4 text-slate-400">Email Only</td>
+                    <td class="p-4 text-slate-400 font-sans text-xs">Free first report, standard vocabulary mapping, read-only collector validation.</td>
+                  </tr>
+                  <tr class="hover:bg-slate-800/20 transition-colors">
+                    <td class="p-4 font-bold text-white">Transactional Audit</td>
+                    <td class="p-4">2–24 servers (16–192 GPUs)</td>
+                    <td class="p-4 text-emerald-400 font-semibold text-base">€28</td>
+                    <td class="p-4">3–5 Biz Days</td>
+                    <td class="p-4 text-slate-400">Standard (9-5)</td>
+                    <td class="p-4 text-slate-400 font-sans text-xs">Batch intake, default data masking, 30-day secure log retention, standard Codebook v0.2.1.</td>
+                  </tr>
+                  <tr class="hover:bg-slate-800/20 transition-colors bg-slate-800/10">
+                    <td class="p-4 font-bold text-white">
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <span>High-Volume Fleet</span>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-1.5 py-0.5 rounded font-normal uppercase">Popular</span>
+                      </div>
+                    </td>
+                    <td class="p-4">25–99 servers (200–792 GPUs)</td>
+                    <td class="p-4 text-emerald-400 font-semibold text-base">€22</td>
+                    <td class="p-4">5–7 Biz Days</td>
+                    <td class="p-4 text-slate-400">Priority Channel</td>
+                    <td class="p-4 text-slate-400 font-sans text-xs">Vocabulary tuned to specific hardware topology, masking audit per batch, expedited parsing.</td>
+                  </tr>
+                  <tr class="hover:bg-slate-800/20 transition-colors">
+                    <td class="p-4 font-bold text-white">Institutional</td>
+                    <td class="p-4">100+ servers (800+ GPUs)</td>
+                    <td class="p-4 text-emerald-400 font-semibold text-base">Custom Matrix</td>
+                    <td class="p-4">&lt; 72 Hours Custom</td>
+                    <td class="p-4 text-slate-400">24/7 Dedicated Eng</td>
+                    <td class="p-4 text-slate-400 font-sans text-xs">On-premise collector option, custom Codebook generation, formal compliance documentation, API access.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4. TWO ZERO-FRICTION CALL TO ACTIONS -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
+            <a href="mailto:vitali.demille@glyphai.ie?subject=Request%20Free%20Pilot%20GPU%20Health%20Audit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm font-mono transition-all shadow-lg shadow-emerald-950/40 cursor-pointer">
+              <span>Request Free Pilot (8 GPUs / 1 Server)</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+            <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm font-mono transition-all cursor-pointer">
+              <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
+              <span>Audit Collector Script on GitHub</span>
+            </a>
+          </div>
+
+        </div>
+      </section>
+      <!-- END: MVP COMMERCIAL & CONCEPT OVERHAUL COMPONENT -->
     </main>
 
     <!-- Footer -->
@@ -575,6 +982,32 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
     </footer>
 
     <script>
+      
+      let currentTheme = localStorage.getItem('glyphai_theme') || 'dark';
+
+      function applyTheme(theme) {
+        currentTheme = theme;
+        try { localStorage.setItem('glyphai_theme', theme); } catch(e) {}
+        const root = document.documentElement;
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+
+        if (theme === 'light') {
+          root.classList.remove('dark');
+          root.classList.add('light');
+          if (icon) icon.innerText = '🌙';
+          if (label) label.innerText = 'Dark';
+        } else {
+          root.classList.remove('light');
+          root.classList.add('dark');
+          if (icon) icon.innerText = '☀️';
+          if (label) label.innerText = 'Light';
+        }
+      }
+
+      function toggleTheme() {
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      }
       let currentLang = localStorage.getItem('glyphai_lang') || 'en';
       let clusterStressHours = 1000;
       let clusterSeed = 42;
@@ -1011,6 +1444,7 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
       }
 
       window.addEventListener('DOMContentLoaded', () => {
+        applyTheme(currentTheme);
         syncControlsFromState();
         switchLanguage(currentLang);
       });
