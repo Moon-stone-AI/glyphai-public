@@ -796,7 +796,7 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
     }</pre>
       </section>
 
-      <!-- START: MVP COMMERCIAL & CONCEPT OVERHAUL COMPONENT -->
+      <!-- START: MVP COMMERCIAL & CONCEPT OVERHAUL COMPONENT (Tier 2 MVP Reconfiguration) -->
       <section class="bg-slate-900 text-slate-100 font-sans rounded-3xl py-16 px-4 sm:px-6 lg:px-8 border border-slate-800 shadow-2xl mt-12 mb-8">
         <div class="max-w-6xl mx-auto space-y-20">
 
@@ -807,88 +807,155 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Zero-Trust Telemetry Engine
               </div>
               <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl text-white">
-                Secure, Isolated Log Analytics
+                Архитектурная необратимость для аппаратных активов.
               </h2>
-              <p class="text-lg text-slate-400">
-                Built around rigid data minimisation parameters. Your secrets never leave your infrastructure footprint.
+              <p class="text-base sm:text-lg text-slate-300 leading-relaxed">
+                Сырые логи GPU — это лингвистический шум. GlyphAI транслирует вендорские диалекты (NVIDIA Xid, IPMI SEL, DCGM) в единый семантический словарь. Каждое событие становится квантифицируемым концептом. Health Score — это детерминированная сумма этих концептов, а не вероятностная догадка.
               </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 border-t border-slate-700/50 pt-8 text-center">
-              <div class="p-4 space-y-2">
-                <div class="text-2xl font-bold text-white">Read-Only Execution</div>
-                <div class="text-sm text-slate-400">No installation or continuous background processes required. Runs entirely on demand.</div>
+              <div class="p-4 space-y-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
+                <div class="text-xl font-bold text-white">Read-Only Выполнение</div>
+                <div class="text-sm text-slate-400">Никаких постоянных фоновых процессов и инсталляций. Коллектор выполняется строго по требованию в вашей среде.</div>
               </div>
-              <div class="p-4 space-y-2">
-                <div class="text-2xl font-bold text-white">Air-Gapped Privacy</div>
-                <div class="text-sm text-slate-400">No outbound network traffic generated. Zero diagnostic connections back to outer nodes.</div>
+              <div class="p-4 space-y-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
+                <div class="text-xl font-bold text-white">Air-Gapped Приватность</div>
+                <div class="text-sm text-slate-400">Ноль исходящего сетевого трафика. Отсутствуют любые внешние диагностические соединения.</div>
               </div>
-              <div class="p-4 space-y-2">
-                <div class="text-2xl font-bold text-white">Masked by Default</div>
-                <div class="text-sm text-slate-400">IPs, MAC addresses, hostnames, and asset serial tags are completely redacted locally.</div>
+              <div class="p-4 space-y-2 bg-slate-950/40 rounded-xl border border-slate-800/80">
+                <div class="text-xl font-bold text-white">Маскирование по умолчанию</div>
+                <div class="text-sm text-slate-400">Хеширование hostname, удаление IPv4/IPv6/MAC и редакция серийных номеров до создания архива.</div>
               </div>
             </div>
             
-            <div class="mt-8 text-center">
-              <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
-                <span>Inspect and audit the collector script on GitHub</span>
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+              <a href="mailto:vitali.demille@glyphai.ie?subject=Request%20Free%20Pilot%20GPU%20Health%20Audit" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono transition-all shadow-md cursor-pointer">
+                <span>Запустить бесплатный пилот</span>
+                <span>→</span>
+              </a>
+              <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs font-mono text-emerald-400 hover:text-emerald-300 transition-colors">
+                <span>Открыть код коллектора на GitHub ↗</span>
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
               </a>
             </div>
           </div>
 
-          <!-- 2. THE CONCEPT VISUAL PIPELINE -->
+          <!-- 2. THE CONCEPT: Семантическое сохранение, а не сокрытие -->
           <div class="space-y-12">
-            <div class="text-center max-w-2xl mx-auto space-y-3">
-              <h3 class="text-2xl font-bold text-white tracking-tight">The GlyphAI Concept Behind the Score</h3>
-              <p class="text-slate-400">
-                Raw GPU logs are linguistic noise. We translate vendor dialects (NVIDIA Xid, IPMI SEL, DCGM) into a single semantic vocabulary. Each event becomes a quantifiable concept. The score is the deterministic sum of these concepts, not a guess.
+            <div class="p-8 rounded-2xl bg-slate-950/70 border border-slate-800 space-y-4 max-w-4xl mx-auto shadow-inner">
+              <div class="flex items-center gap-2 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">
+                <span>THE GLYPHAI CONCEPT · TIER 2 REVERSIBLE TELEMETRY</span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                Семантическое сохранение, а не сокрытие.
+              </h3>
+              <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-sans">
+                Мы не шифруем и не маскируем сырой текст; мы изменяем его репрезентативный класс. Исходные логи декомпозируются на семантические атомы и онтологические отношения. Посредством трансформации, управляемой Кодбуком (Codebook v0.2.1), они маппятся на структурированные глифы. Исходная поверхностная форма (surface form) архитектурно отбрасывается. Смысл сохраняется для аналитики; возможность восстановления исходного текста устраняется на уровне архитектуры, а не вычислительной сложности.
               </p>
             </div>
 
-            <!-- Pipeline Graphics grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-              <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-6 relative space-y-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">1</div>
-                <h4 class="text-lg font-semibold text-white">Extract Logs Locally</h4>
-                <p class="text-sm text-slate-400">Run the single read-only collection asset locally on your headnode cluster architecture.</p>
+            <!-- Pipeline Graphics grid: Пайплайн семантической трансформации (3 шага) -->
+            <div class="space-y-6">
+              <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h4 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  Пайплайн семантической трансформации
+                </h4>
+                <p class="text-xs sm:text-sm text-slate-400 font-mono">
+                  3 квантифицированных этапа детерминированного онтологического анализа
+                </p>
               </div>
-              <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-6 relative space-y-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">2</div>
-                <h4 class="text-lg font-semibold text-white">Semantic Alignment</h4>
-                <p class="text-sm text-slate-400">Map internal system signals against Codebook rules to filter background white noise.</p>
-              </div>
-              <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-6 relative space-y-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">3</div>
-                <h4 class="text-lg font-semibold text-white">Deterministic Scores</h4>
-                <p class="text-sm text-slate-400">Output crystal-clear telemetry evaluation reports along with definite health indexes.</p>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                <!-- Step 1 -->
+                <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 relative space-y-3.5 hover:border-slate-700 transition-colors flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center font-mono font-bold text-emerald-400 border border-emerald-500/20">1</div>
+                      <span class="text-[10px] font-mono text-emerald-400/90 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40 uppercase">Ingestion</span>
+                    </div>
+                    <h5 class="text-lg font-bold text-white">Локализованный сбор и минимизация данных</h5>
+                    <div class="space-y-2 text-xs font-mono mt-3">
+                      <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
+                        <span class="text-emerald-400 font-semibold block mb-0.5">Действие:</span>
+                        <span>Open-source коллектор работает в режиме read-only, без сетевых соединений.</span>
+                      </div>
+                      <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
+                        <span class="text-cyan-400 font-semibold block mb-0.5">Онтология:</span>
+                        <span>Извлекается сырая телеметрия (kernel, BMC, DCGM). Маскировка (хеширование hostname, удаление IPv4/IPv6/MAC, редакция серийных номеров) применяется до создания архива. Сырой текст никогда не покидает локальную среду в своей исходной форме.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 relative space-y-3.5 hover:border-slate-700 transition-colors flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center font-mono font-bold text-cyan-400 border border-cyan-500/20">2</div>
+                      <span class="text-[10px] font-mono text-cyan-400/90 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40 uppercase">Translation</span>
+                    </div>
+                    <h5 class="text-lg font-bold text-white">Семантическая трансляция и разделение декодеров</h5>
+                    <div class="space-y-2 text-xs font-mono mt-3">
+                      <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
+                        <span class="text-emerald-400 font-semibold block mb-0.5">Действие:</span>
+                        <span>Офлайн-обработка маскированного архива.</span>
+                      </div>
+                      <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
+                        <span class="text-cyan-400 font-semibold block mb-0.5">Онтология:</span>
+                        <span>Вендорские диалекты парсятся в семантические атомы и онтологические отношения с Codebook v0.2.1. Трансформация намеренно many-to-one: различные формулировки маппятся на один концепт, архитектурно разрывая путь к уникальному восстановлению исходного текста.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 relative space-y-3.5 hover:border-slate-700 transition-colors flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center font-mono font-bold text-purple-400 border border-purple-500/20">3</div>
+                      <span class="text-[10px] font-mono text-purple-400/90 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-800/40 uppercase">Scoring</span>
+                    </div>
+                    <h5 class="text-lg font-bold text-white">Детерминированное скорингование и вывод</h5>
+                    <div class="space-y-2 text-xs font-mono mt-3">
+                      <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
+                        <span class="text-emerald-400 font-semibold block mb-0.5">Действие:</span>
+                        <span>Генерация итогового отчета о здоровье флота.</span>
+                      </div>
+                      <div class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-slate-300">
+                        <span class="text-cyan-400 font-semibold block mb-0.5">Онтология:</span>
+                        <span>Система вычисляет Health Score (0–100%) как детерминированную функцию сохраненных семантических концептов и их штрафных весов. Итоговый отчет — контролируемая реконструкция: доказательства без сохранения сырых строк логов.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             
             <!-- Operational Traction Badges -->
-            <div class="pt-6 border-t border-slate-800 text-center max-w-4xl mx-auto">
+            <div class="pt-4 border-t border-slate-800 text-center max-w-4xl mx-auto">
               <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div class="text-3xl font-extrabold text-emerald-400">12</div>
-                  <div class="text-xs tracking-wider uppercase text-slate-500 mt-1">AI Fleets Verified</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1">Верифицированных AI-Кластеров</div>
                 </div>
                 <div>
                   <div class="text-3xl font-extrabold text-emerald-400">34,500+</div>
-                  <div class="text-xs tracking-wider uppercase text-slate-500 mt-1">GPUs Evaluated</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1">Оцененных GPU Ускорителей</div>
                 </div>
                 <div>
                   <div class="text-3xl font-extrabold text-emerald-400">8</div>
-                  <div class="text-xs tracking-wider uppercase text-slate-500 mt-1">Hardware Asset Brokers</div>
+                  <div class="text-xs tracking-wider uppercase text-slate-400 mt-1">Аппаратных Брокеров Оборудования</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 3. PRICING TIERS MATRIX -->
+          <!-- 3. PRICING TIERS MATRIX (Скорректированная терминология) -->
           <div class="space-y-8">
             <div class="text-center space-y-2">
-              <h3 class="text-2xl font-bold text-white tracking-tight">Pricing Tiers & Service Parameters</h3>
-              <p class="text-slate-400 text-sm">Clear performance metrics scaled precisely to your operational compute requirements.</p>
+              <h3 class="text-2xl font-bold text-white tracking-tight">Тарифные Планы & Параметры Обслуживания</h3>
+              <p class="text-slate-400 text-sm">Четкие метрики производительности, масштабированные под ваши вычислительные задачи.</p>
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-slate-800 shadow-md">
@@ -896,65 +963,114 @@ def compute_gpu_health_score(g: GpuTelemetryProfile) -> Dict:
                 <thead>
                   <tr class="bg-slate-800/60 text-slate-300 font-semibold text-xs tracking-wider uppercase border-b border-slate-800 font-mono">
                     <th class="p-4">Tier</th>
-                    <th class="p-4">Fleet Size</th>
-                    <th class="p-4">Price per GPU</th>
-                    <th class="p-4">Turnaround</th>
-                    <th class="p-4">Support</th>
-                    <th class="p-4">Key Features</th>
+                    <th class="p-4">Размер флота</th>
+                    <th class="p-4">Цена за GPU</th>
+                    <th class="p-4">Время выполнения (Turnaround)</th>
+                    <th class="p-4">Уровень поддержки</th>
+                    <th class="p-4">Ключевые онтологические функции</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800 text-slate-300">
                   <tr class="hover:bg-slate-800/20 transition-colors">
                     <td class="p-4 font-bold text-white">Pilot</td>
-                    <td class="p-4">1 server (8 GPUs)</td>
+                    <td class="p-4">1 сервер (8 GPU)</td>
                     <td class="p-4 text-emerald-400 font-semibold text-base">€35</td>
-                    <td class="p-4">48 Hours</td>
-                    <td class="p-4 text-slate-400">Email Only</td>
-                    <td class="p-4 text-slate-400 font-sans text-xs">Free first report, standard vocabulary mapping, read-only collector validation.</td>
+                    <td class="p-4">48 часов</td>
+                    <td class="p-4 text-slate-400">Только Email</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs">Бесплатный первый отчет, стандартное семантическое маппирование, валидация read-only коллектора.</td>
                   </tr>
                   <tr class="hover:bg-slate-800/20 transition-colors">
                     <td class="p-4 font-bold text-white">Transactional Audit</td>
-                    <td class="p-4">2–24 servers (16–192 GPUs)</td>
+                    <td class="p-4">2–24 сервера (16–192 GPU)</td>
                     <td class="p-4 text-emerald-400 font-semibold text-base">€28</td>
-                    <td class="p-4">3–5 Biz Days</td>
-                    <td class="p-4 text-slate-400">Standard (9-5)</td>
-                    <td class="p-4 text-slate-400 font-sans text-xs">Batch intake, default data masking, 30-day secure log retention, standard Codebook v0.2.1.</td>
+                    <td class="p-4">3–5 рабочих дней</td>
+                    <td class="p-4 text-slate-400">Стандартный (рабочие часы)</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs">Пакетный прием, маскировка по умолчанию, 30-дневное хранение логов, стандартный Кодбук v0.2.1.</td>
                   </tr>
                   <tr class="hover:bg-slate-800/20 transition-colors bg-slate-800/10">
                     <td class="p-4 font-bold text-white">
                       <div class="flex items-center gap-1.5 flex-wrap">
                         <span>High-Volume Fleet</span>
-                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-1.5 py-0.5 rounded font-normal uppercase">Popular</span>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-1.5 py-0.5 rounded font-normal uppercase">Популярный</span>
                       </div>
                     </td>
-                    <td class="p-4">25–99 servers (200–792 GPUs)</td>
+                    <td class="p-4">25–99 серверов (200–792 GPU)</td>
                     <td class="p-4 text-emerald-400 font-semibold text-base">€22</td>
-                    <td class="p-4">5–7 Biz Days</td>
-                    <td class="p-4 text-slate-400">Priority Channel</td>
-                    <td class="p-4 text-slate-400 font-sans text-xs">Vocabulary tuned to specific hardware topology, masking audit per batch, expedited parsing.</td>
+                    <td class="p-4">5–7 рабочих дней</td>
+                    <td class="p-4 text-slate-400">Приоритетный (выделенный канал)</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs">Словарь, адаптированный под вашу аппаратную топологию, аудит маскировки на каждый пакет, ускоренный парсинг.</td>
                   </tr>
                   <tr class="hover:bg-slate-800/20 transition-colors">
                     <td class="p-4 font-bold text-white">Institutional</td>
-                    <td class="p-4">100+ servers (800+ GPUs)</td>
-                    <td class="p-4 text-emerald-400 font-semibold text-base">Custom Matrix</td>
-                    <td class="p-4">&lt; 72 Hours Custom</td>
-                    <td class="p-4 text-slate-400">24/7 Dedicated Eng</td>
-                    <td class="p-4 text-slate-400 font-sans text-xs">On-premise collector option, custom Codebook generation, formal compliance documentation, API access.</td>
+                    <td class="p-4">100+ серверов (800+ GPU)</td>
+                    <td class="p-4 text-emerald-400 font-semibold text-base">Индивидуально</td>
+                    <td class="p-4">Индивидуальный SLA (&lt; 72ч)</td>
+                    <td class="p-4 text-slate-400">Выделенный инженер 24/7</td>
+                    <td class="p-4 text-slate-300 font-sans text-xs">Опция on-premise коллектора, генерация кастомного Кодбука, формальная документация по комплаенсу.</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+
+            <div class="text-center text-xs font-mono text-slate-400">
+              Годовые оценки предполагают 2.4 проверки в год. Итоговая цена и SLA подтверждаются в письменном виде до начала работ. Все цены в EUR, без НДС.
+            </div>
           </div>
 
-          <!-- 4. TWO ZERO-FRICTION CALL TO ACTIONS -->
+          <!-- 4. СИНХРОНИЗАЦИЯ FAQ (Codebook-Controlled Non-Interpretability & Data Minimisation) -->
+          <div class="space-y-6 pt-4 border-t border-slate-800">
+            <div class="text-center space-y-2">
+              <div class="inline-flex items-center gap-2 text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider">
+                <span>CODEBOOK-CONTROLLED NON-INTERPRETABILITY & DATA MINIMISATION</span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Часто Задаваемые Вопросы (FAQ)</h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
+              <!-- Question 1 -->
+              <div class="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                <h4 class="text-base sm:text-lg font-bold text-emerald-400 flex items-start gap-2">
+                  <span class="font-mono text-xs text-slate-400 mt-1">Q:</span>
+                  <span>Что происходит, если логи на сервере были стерты?</span>
+                </h4>
+                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-emerald-500/40">
+                  Архитектурная необратимость требует наличия данных. Если сырые логи отсутствуют, система не может реконструировать исторические семантические атомы. Оценка строго переключается на активные диагностические тесты (например, dcgmi diag), а в отчете явно фиксируется статус "No historical semantic data". Система сохраняет неопределенность, а не галлюцинирует оценку.
+                </p>
+              </div>
+
+              <!-- Question 2 -->
+              <div class="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                <h4 class="text-base sm:text-lg font-bold text-cyan-400 flex items-start gap-2">
+                  <span class="font-mono text-xs text-slate-400 mt-1">Q:</span>
+                  <span>Чем это отличается от стандартной анонимизации или шифрования?</span>
+                </h4>
+                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-cyan-500/40">
+                  Шифрование сохраняет исходную форму и скрывает ее обратимо. Анонимизация удаляет идентификаторы, но оставляет инференциальные пути intact. GlyphAI применяет Codebook-Controlled Non-Interpretability: он изменяет репрезентативный класс данных. Исходная поверхностная форма не хранится; сохраняются только структурированные семантические концепты, необходимые для легитимной задачи (оценка здоровья), что обеспечивает строгую Data Minimisation (минимизацию данных) на архитектурном уровне.
+                </p>
+              </div>
+
+              <!-- Question 3 -->
+              <div class="p-6 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                <h4 class="text-base sm:text-lg font-bold text-purple-400 flex items-start gap-2">
+                  <span class="font-mono text-xs text-slate-400 mt-1">Q:</span>
+                  <span>Кому принадлежат данные и можно ли их восстановить обратно в исходный лог?</span>
+                </h4>
+                <p class="text-sm text-slate-300 leading-relaxed font-sans pl-5 border-l-2 border-purple-500/40">
+                  Трансформированное глиф-представление является many-to-one маппингом. Поскольку исходная лингвистическая поверхность отбрасывается в процессе трансформации, уникальная реконструкция сырого текста архитектурно не поддерживается, а не просто вычислительно затруднена. Исходные логи удаляются из систем GlyphAI в течение 30 дней после генерации отчета, гарантируя, что семантический слой остается единственным операционным объектом.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. TWO ZERO-FRICTION CALL TO ACTIONS -->
           <div class="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
             <a href="mailto:vitali.demille@glyphai.ie?subject=Request%20Free%20Pilot%20GPU%20Health%20Audit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm font-mono transition-all shadow-lg shadow-emerald-950/40 cursor-pointer">
-              <span>Request Free Pilot (8 GPUs / 1 Server)</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              <span>Запустить бесплатный пилот (8 GPU / 1 Сервер)</span>
+              <span>→</span>
             </a>
             <a href="https://github.com/Moon-stone-AI/glyph-fleet-rca" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm font-mono transition-all cursor-pointer">
               <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
-              <span>Audit Collector Script on GitHub</span>
+              <span>Открыть код коллектора на GitHub</span>
             </a>
           </div>
 
